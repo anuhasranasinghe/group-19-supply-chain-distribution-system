@@ -65,6 +65,29 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+--  Order Table
+
+CREATE TABLE IF NOT EXISTS orders (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    customer_id UUID NOT NULL,
+    order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    requested_delivery_date DATE NOT NULL,
+    delivery_address TEXT NOT NULL,
+    route_id UUID NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+--  OrderItem Table
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id UUID NOT NULL,
+    product_id UUID NOT NULL,
+    quantity INTEGER NOT NULL
+);
+
 --  Inventory table 
 
 CREATE TABLE IF NOT EXISTS inventory (
@@ -95,4 +118,15 @@ CREATE TABLE IF NOT EXISTS delivery_items (
     quantity INTEGER NOT NULL,
     delivery_status VARCHAR(50) NOT NULL DEFAULT 'Pending',
     delivered_at TIMESTAMP
+);
+
+--  OrderStatusHistory Table
+
+CREATE TABLE IF NOT EXISTS order_status_history (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id UUID NOT NULL,
+    old_status VARCHAR(50),
+    new_status VARCHAR(50) NOT NULL,
+    changed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    changed_by UUID
 );
