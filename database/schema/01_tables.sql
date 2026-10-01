@@ -85,3 +85,14 @@ CREATE TABLE IF NOT EXISTS notifications (
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Delivery items table
+
+CREATE TABLE IF NOT EXISTS delivery_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_item_id UUID NOT NULL,
+    truck_trip_id UUID NOT NULL,
+    quantity INTEGER NOT NULL,
+    delivery_status VARCHAR(50) NOT NULL DEFAULT 'Pending',
+    delivered_at TIMESTAMP
+);
