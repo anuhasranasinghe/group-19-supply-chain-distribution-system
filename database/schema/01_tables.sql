@@ -88,6 +88,55 @@ CREATE TABLE IF NOT EXISTS order_items (
     quantity INTEGER NOT NULL
 );
 
+-- TrainTrip Table
+
+CREATE TABLE IF NOT EXISTS train_trips (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    from_city VARCHAR(100) NOT NULL DEFAULT 'Kandy',
+    to_city VARCHAR(100) NOT NULL,
+    destination_store_id UUID,
+    trip_date DATE NOT NULL,
+    departure_time TIMESTAMP NOT NULL,
+    arrival_time TIMESTAMP NOT NULL,
+    max_capacity INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- OrderTrainAllocation Table
+
+CREATE TABLE IF NOT EXISTS order_train_allocations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_item_id UUID NOT NULL,
+    train_trip_id UUID NOT NULL,
+    quantity_allocated INTEGER NOT NULL
+);
+
+-- Truck Table
+
+CREATE TABLE IF NOT EXISTS trucks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    vehicle_no VARCHAR(50) NOT NULL UNIQUE,
+    capacity DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- TruckTrip Table
+
+CREATE TABLE IF NOT EXISTS truck_trips (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    truck_id UUID NOT NULL,
+    driver_id UUID NOT NULL,
+    assistant_id UUID NOT NULL,
+    route_id UUID NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP,
+    status VARCHAR(50) DEFAULT 'Scheduled',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 --  Inventory table 
 
 CREATE TABLE IF NOT EXISTS inventory (
