@@ -58,6 +58,55 @@ ADD CONSTRAINT fk_order_items_product
 FOREIGN KEY (product_id) REFERENCES products(id)
 ON DELETE RESTRICT;
 
+-- TrainTrip - Destination Store relationship
+
+ALTER TABLE train_trips
+ADD CONSTRAINT fk_train_trips_destination_store
+FOREIGN KEY (destination_store_id) REFERENCES stores(id)
+ON DELETE RESTRICT;
+
+-- OrderTrainAllocation - OrderItem relationship
+
+ALTER TABLE order_train_allocations
+ADD CONSTRAINT fk_allocations_order_item
+FOREIGN KEY (order_item_id) REFERENCES order_items(id)
+ON DELETE CASCADE;
+
+-- OrderTrainAllocation - TrainTrip relationship
+
+ALTER TABLE order_train_allocations
+ADD CONSTRAINT fk_allocations_train_trip
+FOREIGN KEY (train_trip_id) REFERENCES train_trips(id)
+ON DELETE RESTRICT;
+
+-- TruckTrip - Truck relationship
+
+ALTER TABLE truck_trips
+ADD CONSTRAINT fk_truck_trips_truck
+FOREIGN KEY (truck_id) REFERENCES trucks(id)
+ON DELETE RESTRICT;
+
+-- TruckTrip - Driver relationship
+
+ALTER TABLE truck_trips
+ADD CONSTRAINT fk_truck_trips_driver
+FOREIGN KEY (driver_id) REFERENCES workers(id)
+ON DELETE RESTRICT;
+
+-- TruckTrip - Assistant relationship
+
+ALTER TABLE truck_trips
+ADD CONSTRAINT fk_truck_trips_assistant
+FOREIGN KEY (assistant_id) REFERENCES workers(id)
+ON DELETE RESTRICT;
+
+-- TruckTrip - Route relationship
+
+ALTER TABLE truck_trips
+ADD CONSTRAINT fk_truck_trips_route
+FOREIGN KEY (route_id) REFERENCES routes(id)
+ON DELETE RESTRICT;
+
 --Inventory - store realation
 
 ALTER TABLE inventory
