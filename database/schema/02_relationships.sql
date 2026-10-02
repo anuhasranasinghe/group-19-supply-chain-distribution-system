@@ -43,3 +43,15 @@ ALTER TABLE inventory
 ADD CONSTRAINT fk_inventory_product
 FOREIGN KEY (product_id) REFERENCES products(id)
 ON DELETE RESTRICT;
+
+-- Delivery item - order item relationship
+ALTER TABLE delivery_items
+ADD CONSTRAINT fk_delivery_items_order_item
+FOREIGN KEY (order_item_id) REFERENCES order_items(id)
+ON DELETE CASCADE;
+
+-- Delivery item - truck trip relationship
+ALTER TABLE delivery_items
+ADD CONSTRAINT fk_delivery_items_truck_trip
+FOREIGN KEY (truck_trip_id) REFERENCES truck_trips(id)
+ON DELETE RESTRICT;
