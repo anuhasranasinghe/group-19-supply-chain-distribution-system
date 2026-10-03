@@ -23,6 +23,31 @@ ALTER TABLE products
   ADD CONSTRAINT chk_products_unit_space_consumption
   CHECK (unit_space_consumption > 0);
 
+-- Train trip capacity must be positive
+ALTER TABLE train_trips
+  ADD CONSTRAINT chk_train_trips_max_capacity
+  CHECK (max_capacity > 0);
+
+-- Train arrival must be after departure
+ALTER TABLE train_trips
+  ADD CONSTRAINT chk_train_trips_times
+  CHECK (arrival_time > departure_time);
+
+-- Allocated quantity must be positive
+ALTER TABLE order_train_allocations
+  ADD CONSTRAINT chk_allocations_quantity_allocated
+  CHECK (quantity_allocated > 0);
+
+-- Truck capacity must be positive
+ALTER TABLE trucks
+  ADD CONSTRAINT chk_trucks_capacity
+  CHECK (capacity > 0);
+
+-- Truck trip end time must be after start time
+ALTER TABLE truck_trips
+  ADD CONSTRAINT chk_truck_trips_times
+  CHECK (end_time IS NULL OR end_time > start_time);
+
 -- Delivery item status must be a recognized value
 ALTER TABLE delivery_items
 ADD CONSTRAINT chk_delivery_items_status
