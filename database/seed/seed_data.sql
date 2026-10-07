@@ -104,3 +104,45 @@ BEGIN
     ON CONFLICT (id) DO NOTHING;
 
 END $$;
+
+
+    -- 8. ORDERS & ORDER ITEMS
+    FOR i IN 1..40 LOOP
+        v_ord_id := gen_random_uuid();
+        INSERT INTO orders (
+            id, 
+            customer_id, 
+            order_date, 
+            requested_delivery_date, 
+            delivery_address, 
+            route_id, 
+            status
+        ) VALUES (
+            v_ord_id,
+            CASE (i % 10)
+                WHEN 0 THEN u_cust10 WHEN 1 THEN u_cust1 WHEN 2 THEN u_cust2 WHEN 3 THEN u_cust3 WHEN 4 THEN u_cust4
+                WHEN 5 THEN u_cust5 WHEN 6 THEN u_cust6 WHEN 7 THEN u_cust7 WHEN 8 THEN u_cust8 ELSE u_cust9
+            END,
+            CURRENT_TIMESTAMP - (i || ' days')::INTERVAL,
+            CURRENT_DATE + (7 + (i % 5)) * INTERVAL '1 day',
+            'Sample Delivery Street Address #' || i,
+            CASE (i % 6)
+                WHEN 0 THEN rt_col1 WHEN 1 THEN rt_gal1 WHEN 2 THEN rt_mat1 
+                WHEN 3 THEN rt_jaf1 WHEN 4 THEN rt_tri1 ELSE rt_bat1
+            END,
+            CASE 
+                WHEN i <= 15 THEN 'Delivered' 
+                WHEN i <= 30 THEN 'Scheduled' 
+                ELSE 'Pending' 
+            END
+        );
+
+        -- Insert 2 order items per order (Detergent + Tea)
+        v_ord_item_id := gen_random_uuid();
+        INSERT INTO order_items (id, order_id, product_id, quantity)
+        VALUES (v_ord_item_id, v_ord_id, p_det1kg, 10 + (i % 5));
+
+        v_ord_item_id := gen_random_uuid();
+        INSERT INTO order_items (id, order_id, product_id, quantity)
+        VALUES (v_ord_item_id, v_ord_id, p_tea500g, 5 + (i % 4));
+    END LOOP;
