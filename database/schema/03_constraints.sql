@@ -1,12 +1,12 @@
 -- check constraint of user.system_role
 ALTER TABLE users
 ADD CONSTRAINT chk_users_system_role
-CHECK (system_role IN ('admin', 'dispatcher', 'store_manager', 'driver', 'assistant', 'customer'))
+CHECK (system_role IN ('admin', 'dispatcher', 'store_manager', 'driver', 'assistant', 'customer'));
 
 -- checking constraint on worker.type
 ALTER TABLE workers
 ADD CONSTRAINT chk_workers_type
-CHECK (type IN ('driver', 'assistant', 'store_manager'))
+CHECK (type IN ('driver', 'assistant', 'store_manager'));
 
 -- Order status must be a recognized value
 ALTER TABLE orders
@@ -85,9 +85,9 @@ ALTER TABLE inventory
 -- check whether worker.hourly_pay > 0
 ALTER TABLE workers
 ADD CONSTRAINT chk_workers_hourly_pay
-CHECK (hourly_pay > 0)
+CHECK (hourly_pay > 0);
 
 -- constraint on notification.type
 ALTER TABLE notifications
 ADD CONSTRAINT chk_notifications_type
-CHECK (type IN ('order_update', 'delivery_update', 'assignment', 'system'))
+CHECK (type IN ('order_update', 'delivery_update', 'assignment', 'system'));
