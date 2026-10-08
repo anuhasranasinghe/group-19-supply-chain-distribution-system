@@ -73,9 +73,17 @@ DECLARE
     p_milk500g UUID := 'd0000000-0000-0000-0000-000000000009';
     p_noodle400g UUID := 'd0000000-0000-0000-0000-000000000010';
 
+    -- Train Trip IDs
+    tt_col1 UUID := 'e0000000-0000-0000-0000-000000000001';
+    tt_col2 UUID := 'e0000000-0000-0000-0000-000000000002';
+    tt_gal1 UUID := 'e0000000-0000-0000-0000-000000000003';
+    tt_mat1 UUID := 'e0000000-0000-0000-0000-000000000004';
+    tt_jaf1 UUID := 'e0000000-0000-0000-0000-000000000005';
+
     -- Variables used by the order and order-item seed loop
     v_ord_id UUID;
     v_ord_item_id UUID;
+    v_overflow_item_id UUID;
 
     -- Truck IDs from the reference project
     tr_01 UUID := 'f0000000-0000-0000-0000-000000000001';
@@ -187,6 +195,42 @@ BEGIN
     (p_noodle400g, 'Instant Fried Noodles 400g', 180.00, 0.3000)
     ON CONFLICT (id) DO NOTHING;
 
+    -- 7. TRAIN TRIPS
+    INSERT INTO train_trips (
+        id, from_city, to_city, destination_store_id,
+        trip_date, departure_time, arrival_time, max_capacity
+    ) VALUES
+    (tt_col1, 'Kandy', 'Colombo', st_colombo,
+     CURRENT_DATE + INTERVAL '1 day',
+     CURRENT_TIMESTAMP + INTERVAL '1 day',
+     CURRENT_TIMESTAMP + INTERVAL '1 day 4 hours',
+     1000),
+    
+    (tt_col2, 'Kandy', 'Colombo', st_colombo,
+     CURRENT_DATE + INTERVAL '2 days',
+     CURRENT_TIMESTAMP + INTERVAL '2 days',
+     CURRENT_TIMESTAMP + INTERVAL '2 days 4 hours',
+     1000),
+    
+    (tt_gal1, 'Kandy', 'Galle', st_galle,
+     CURRENT_DATE + INTERVAL '1 day',
+     CURRENT_TIMESTAMP + INTERVAL '1 day 1 hour',
+     CURRENT_TIMESTAMP + INTERVAL '1 day 6 hours',
+     800),
+    
+    (tt_mat1, 'Kandy', 'Matara', st_matara,
+     CURRENT_DATE + INTERVAL '2 days',
+     CURRENT_TIMESTAMP + INTERVAL '2 days 1 hour',
+     CURRENT_TIMESTAMP + INTERVAL '2 days 7 hours',
+     800),
+    
+    (tt_jaf1, 'Kandy', 'Jaffna', st_jaffna,
+     CURRENT_DATE + INTERVAL '1 day',
+     CURRENT_TIMESTAMP + INTERVAL '1 day 2 hours',
+     CURRENT_TIMESTAMP + INTERVAL '1 day 9 hours',
+     1200)
+    
+    ON CONFLICT (id) DO NOTHING;
 
     -- 8. ORDERS & ORDER ITEMS
     FOR i IN 1..40 LOOP
@@ -224,10 +268,35 @@ BEGIN
         INSERT INTO order_items (id, order_id, product_id, quantity)
         VALUES (v_ord_item_id, v_ord_id, p_det1kg, 10 + (i % 5));
 
+        IF i = 6 THEN
+            v_overflow_item_id := v_ord_item_id;
+        END IF;
+
         v_ord_item_id := gen_random_uuid();
         INSERT INTO order_items (id, order_id, product_id, quantity)
         VALUES (v_ord_item_id, v_ord_id, p_tea500g, 5 + (i % 4));
     END LOOP;
+
+    -- 10. ORDER TRAIN ALLOCATIONS
+    
+    INSERT INTO order_train_allocations (
+        id,
+        order_item_id,
+        train_trip_id,
+        quantity_allocated
+    ) VALUES
+    (
+        gen_random_uuid(),
+        v_overflow_item_id,
+        tt_col1,
+        6
+    ),
+    (
+        gen_random_uuid(),
+        v_overflow_item_id,
+        tt_col2,
+        5
+    );
 
     -- 11. TRUCKS
     INSERT INTO trucks (id, vehicle_no, capacity) VALUES
