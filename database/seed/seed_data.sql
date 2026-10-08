@@ -73,6 +73,10 @@ DECLARE
     p_milk500g UUID := 'd0000000-0000-0000-0000-000000000009';
     p_noodle400g UUID := 'd0000000-0000-0000-0000-000000000010';
 
+    -- Variables used by the order and order-item seed loop
+    v_ord_id UUID;
+    v_ord_item_id UUID;
+
 
 BEGIN
     -- 1. USERS
