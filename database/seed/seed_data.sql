@@ -39,6 +39,40 @@ DECLARE
     u_cust9 UUID := 'a0000000-0000-0000-0000-000000000049';
     u_cust10 UUID := 'a0000000-0000-0000-0000-000000000050';
 
+    -- Store IDs
+    st_colombo UUID := 'b0000000-0000-0000-0000-000000000001';
+    st_galle UUID := 'b0000000-0000-0000-0000-000000000002';
+    st_matara UUID := 'b0000000-0000-0000-0000-000000000003';
+    st_jaffna UUID := 'b0000000-0000-0000-0000-000000000004';
+    st_trinco UUID := 'b0000000-0000-0000-0000-000000000005';
+    st_batta UUID := 'b0000000-0000-0000-0000-000000000006';
+
+    -- Route IDs
+    rt_col1 UUID := 'c0000000-0000-0000-0000-000000000001';
+    rt_col2 UUID := 'c0000000-0000-0000-0000-000000000002';
+    rt_gal1 UUID := 'c0000000-0000-0000-0000-000000000003';
+    rt_gal2 UUID := 'c0000000-0000-0000-0000-000000000004';
+    rt_mat1 UUID := 'c0000000-0000-0000-0000-000000000005';
+    rt_mat2 UUID := 'c0000000-0000-0000-0000-000000000006';
+    rt_jaf1 UUID := 'c0000000-0000-0000-0000-000000000007';
+    rt_jaf2 UUID := 'c0000000-0000-0000-0000-000000000008';
+    rt_tri1 UUID := 'c0000000-0000-0000-0000-000000000009';
+    rt_tri2 UUID := 'c0000000-0000-0000-0000-000000000010';
+    rt_bat1 UUID := 'c0000000-0000-0000-0000-000000000011';
+    rt_bat2 UUID := 'c0000000-0000-0000-0000-000000000012';
+
+    -- Product IDs
+    p_det1kg UUID := 'd0000000-0000-0000-0000-000000000001';
+    p_soap100g UUID := 'd0000000-0000-0000-0000-000000000002';
+    p_shampoo200ml UUID := 'd0000000-0000-0000-0000-000000000003';
+    p_tea500g UUID := 'd0000000-0000-0000-0000-000000000004';
+    p_biscuit400g UUID := 'd0000000-0000-0000-0000-000000000005';
+    p_oil1l UUID := 'd0000000-0000-0000-0000-000000000006';
+    p_flour1kg UUID := 'd0000000-0000-0000-0000-000000000007';
+    p_sugar1kg UUID := 'd0000000-0000-0000-0000-000000000008';
+    p_milk500g UUID := 'd0000000-0000-0000-0000-000000000009';
+    p_noodle400g UUID := 'd0000000-0000-0000-0000-000000000010';
+
 
 BEGIN
     -- 1. USERS
@@ -102,6 +136,54 @@ BEGIN
     (u_ast3, 'assistant', 650.00, '0713333333'),
     (u_ast4, 'assistant', 650.00, '0713333334')
     ON CONFLICT (id) DO NOTHING;
+
+    -- 4. STORES
+    INSERT INTO stores (id, name, city, location, managed_by) VALUES
+    (st_colombo, 'Colombo Central Depot', 'Colombo', 'Pettah Goods Yard, Colombo', u_mgr1),
+    (st_galle, 'Galle Southern Hub', 'Galle', 'Station Road, Galle', u_mgr2),
+    (st_matara, 'Matara Regional Store', 'Matara', 'Railway Avenue, Matara', u_mgr3),
+    (st_jaffna, 'Jaffna Northern Terminal', 'Jaffna', 'Station Road, Jaffna', u_mgr4),
+    (st_trinco, 'Trincomalee Bay Depot', 'Trincomalee', 'Harbour Road, Trincomalee', u_mgr5),
+    (st_batta, 'Batticaloa East Hub', 'Batticaloa', 'Station Road, Batticaloa', u_mgr6)
+    ON CONFLICT (id) DO NOTHING;
+
+    -- 5. ROUTES
+    INSERT INTO routes (id, store_id, area_name, max_delivery_time) VALUES
+    (rt_col1, st_colombo, 'Colombo North & Central', INTERVAL '4 hours'),
+    (rt_col2, st_colombo, 'Colombo South & Suburbs', INTERVAL '5 hours'),
+    (rt_gal1, st_galle, 'Galle Fort & Coastal Zone', INTERVAL '3 hours'),
+    (rt_gal2, st_galle, 'Galle Inland Route', INTERVAL '4 hours'),
+    (rt_mat1, st_matara, 'Matara Town Route', INTERVAL '3 hours'),
+    (rt_mat2, st_matara, 'Weligama - Matara Corridor', INTERVAL '4 hours'),
+    (rt_jaf1, st_jaffna, 'Jaffna City Center', INTERVAL '4 hours'),
+    (rt_jaf2, st_jaffna, 'Nallur & Peninsula Outer', INTERVAL '5 hours'),
+    (rt_tri1, st_trinco, 'Trinco Town & Bay Zone', INTERVAL '4 hours'),
+    (rt_tri2, st_trinco, 'China Bay Industrial Area', INTERVAL '4 hours'),
+    (rt_bat1, st_batta, 'Batticaloa Town Center', INTERVAL '4 hours'),
+    (rt_bat2, st_batta, 'Kattankudy & Coastal Route', INTERVAL '5 hours')
+    ON CONFLICT (id) DO NOTHING;
+
+    -- 6. PRODUCTS
+    INSERT INTO products (id, name, unit_price, unit_space_consumption) VALUES
+    (p_det1kg, 'KandyPack Detergent Powder 1kg', 450.00, 0.5000),
+    (p_soap100g, 'KandyPack Beauty Soap 100g', 120.00, 0.1000),
+    (p_shampoo200ml, 'KandyPack Herbal Shampoo 200ml', 350.00, 0.2000),
+    (p_tea500g, 'Ceylon Premium Black Tea 500g', 850.00, 0.4000),
+    (p_biscuit400g, 'KandyPack Cream Crackers 400g', 280.00, 0.3000),
+    (p_oil1l, 'Pure Coconut Cooking Oil 1L', 950.00, 0.8000),
+    (p_flour1kg, 'White Wheat Flour 1kg', 220.00, 0.5000),
+    (p_sugar1kg, 'Refined White Sugar 1kg', 240.00, 0.5000),
+    (p_milk500g, 'Full Cream Milk Powder 500g', 1100.00, 0.4000),
+    (p_noodle400g, 'Instant Fried Noodles 400g', 180.00, 0.3000)
+    ON CONFLICT (id) DO NOTHING;
+
+    -- 14. INVENTORY
+    INSERT INTO inventory (id, store_id, product_id, quantity) VALUES
+    (gen_random_uuid(), st_colombo, p_det1kg, 500),
+    (gen_random_uuid(), st_colombo, p_tea500g, 300),
+    (gen_random_uuid(), st_galle, p_det1kg, 400),
+    (gen_random_uuid(), st_matara, p_soap100g, 1000)
+    ON CONFLICT DO NOTHING;
 
 END $$;
 
