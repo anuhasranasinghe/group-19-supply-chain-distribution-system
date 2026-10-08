@@ -77,6 +77,12 @@ DECLARE
     v_ord_id UUID;
     v_ord_item_id UUID;
 
+    -- Truck IDs from the reference project
+    tr_01 UUID := 'f0000000-0000-0000-0000-000000000001';
+    tr_02 UUID := 'f0000000-0000-0000-0000-000000000002';
+    tr_03 UUID := 'f0000000-0000-0000-0000-000000000003';
+    tr_04 UUID := 'f0000000-0000-0000-0000-000000000004';
+
 
 BEGIN
     -- 1. USERS
@@ -181,6 +187,7 @@ BEGIN
     (p_noodle400g, 'Instant Fried Noodles 400g', 180.00, 0.3000)
     ON CONFLICT (id) DO NOTHING;
 
+
     -- 8. ORDERS & ORDER ITEMS
     FOR i IN 1..40 LOOP
         v_ord_id := gen_random_uuid();
@@ -221,6 +228,34 @@ BEGIN
         INSERT INTO order_items (id, order_id, product_id, quantity)
         VALUES (v_ord_item_id, v_ord_id, p_tea500g, 5 + (i % 4));
     END LOOP;
+
+    -- 11. TRUCKS
+    INSERT INTO trucks (id, vehicle_no, capacity) VALUES
+    (tr_01, 'WP-GA-1001', 500.00),
+    (tr_02, 'SP-GB-2002', 450.00),
+    (tr_03, 'NP-GC-3003', 600.00),
+    (tr_04, 'EP-GD-4004', 500.00)
+    ON CONFLICT (id) DO NOTHING;
+
+
+    -- 12. TRUCK TRIPS
+    INSERT INTO truck_trips (
+        id, truck_id, driver_id, assistant_id, route_id,
+        start_time, end_time, status
+    ) VALUES
+    (
+        gen_random_uuid(), tr_01, u_drv1, u_ast1, rt_col1,
+        CURRENT_TIMESTAMP + INTERVAL '8 days',
+        CURRENT_TIMESTAMP + INTERVAL '8 days 4 hours',
+        'Scheduled'
+    ),
+    (
+        gen_random_uuid(), tr_02, u_drv2, u_ast2, rt_gal1,
+        CURRENT_TIMESTAMP + INTERVAL '9 days',
+        CURRENT_TIMESTAMP + INTERVAL '9 days 4 hours',
+        'Scheduled'
+    )
+    ON CONFLICT (id) DO NOTHING;
 
     -- 14. INVENTORY
     INSERT INTO inventory (id, store_id, product_id, quantity) VALUES
