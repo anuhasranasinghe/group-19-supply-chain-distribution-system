@@ -177,17 +177,6 @@ BEGIN
     (p_noodle400g, 'Instant Fried Noodles 400g', 180.00, 0.3000)
     ON CONFLICT (id) DO NOTHING;
 
-    -- 14. INVENTORY
-    INSERT INTO inventory (id, store_id, product_id, quantity) VALUES
-    (gen_random_uuid(), st_colombo, p_det1kg, 500),
-    (gen_random_uuid(), st_colombo, p_tea500g, 300),
-    (gen_random_uuid(), st_galle, p_det1kg, 400),
-    (gen_random_uuid(), st_matara, p_soap100g, 1000)
-    ON CONFLICT DO NOTHING;
-
-END $$;
-
-
     -- 8. ORDERS & ORDER ITEMS
     FOR i IN 1..40 LOOP
         v_ord_id := gen_random_uuid();
@@ -228,3 +217,15 @@ END $$;
         INSERT INTO order_items (id, order_id, product_id, quantity)
         VALUES (v_ord_item_id, v_ord_id, p_tea500g, 5 + (i % 4));
     END LOOP;
+
+    -- 14. INVENTORY
+    INSERT INTO inventory (id, store_id, product_id, quantity) VALUES
+    (gen_random_uuid(), st_colombo, p_det1kg, 500),
+    (gen_random_uuid(), st_colombo, p_tea500g, 300),
+    (gen_random_uuid(), st_galle, p_det1kg, 400),
+    (gen_random_uuid(), st_matara, p_soap100g, 1000)
+    ON CONFLICT DO NOTHING;
+
+END $$;
+
+
