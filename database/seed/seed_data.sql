@@ -1,7 +1,7 @@
 DO $$
 DECLARE
     -- Password hash for 'password123'
-    v_pwd VARCHAR(255) := '$2a$10$e8wFvVnJ.G5g5X1xY5g5X.wFvVnJ.G5g5X1xY5g5X.wFvVnJ.G5g5';
+    v_pwd VARCHAR(255) := '$2b$12$8onKagZx/13uHC0uZjIwjODOObPIUhFLJF5gzPPDRYy8hNuqlGNBu';
 
     -- User IDs
     u_admin UUID := 'a0000000-0000-0000-0000-000000000001';

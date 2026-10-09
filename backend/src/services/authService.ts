@@ -44,8 +44,10 @@ export async function login(username: string, password: string): Promise<LoginRe
   // Expected return: One row if found, zero rows if not found.
 
   const result = await pool.query(
-    `/* YOUR SQL QUERY HERE */`,
-    [username]
+  `SELECT id, username, password_hash, name, system_role, created_at, updated_at
+   FROM users
+   WHERE username = $1`,
+  [username]
   );
 
   const user = result.rows[0];

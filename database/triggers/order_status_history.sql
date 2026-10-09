@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION fn_record_order_status_history()
 RETURNS TRIGGER
-LANGUAGE plpqsql
+LANGUAGE plpgsql
 AS $$ 
 BEGIN
 INSERT INTO order_status_history(
@@ -27,5 +27,5 @@ DROP TRIGGER IF EXISTS trg_order_status_history ON orders;
 CREATE TRIGGER trg_order_status_history
 AFTER UPDATE ON orders
 FOR EACH ROW
-WHEN (OLD.status IF DISTINCT FROM NEW.status)
+WHEN (OLD.status IS DISTINCT FROM NEW.status)
 EXECUTE FUNCTION fn_record_order_status_history();
