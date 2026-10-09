@@ -1,18 +1,12 @@
 // ============================================================
 // Order Service — Order Management Business Logic
 // ============================================================
-// This is one of the most complex services because it handles
-// the core business workflow: customers placing orders, and
-// the validation rules around it.
-//
-// Key business rules enforced here:
-// - 7-day advance order requirement
-// - Route coverage validation
-// - Order must have at least one item
+// Handles core business workflows: customer order placement,
+// validation rules, and role-based order queries.
 // ============================================================
 
 import { pool } from '../database/connection.js';
-import { NotFoundError, ValidationError, ConflictError } from '../utils/errors.js';
+import { NotFoundError, ValidationError } from '../utils/errors.js';
 import { ORDER_ADVANCE_DAYS } from '../config/constants.js';
 
 interface CreateOrderData {
@@ -23,34 +17,55 @@ interface CreateOrderData {
   items: Array<{ product_id: string; quantity: number }>;
 }
 
-// List orders with role-based filtering.
-// Customers see only their own orders; admins/dispatchers see all.
+// List orders with role-based filtering (data-level authorization)
 export async function getOrders(userId: string, userRole: string, page: number = 1, limit: number = 20) {
   const offset = (page - 1) * limit;
 
-  // TODO: Write the PostgreSQL query here.
-  //
-  // This query should:
-  // 1. Select from "orders" with relevant joins.
-  // 2. JOIN with "customers" and "users" to get customer name.
-  // 3. JOIN with "routes" to get route/area info.
-  // 4. Apply role-based filtering:
-  //    - If userRole = 'customer': WHERE orders.customer_id = $3
-  //      (customers can ONLY see their own orders — this is
-  //      data-level authorization, critical for security)
-  //    - If userRole = 'store_manager': WHERE routes.store_id =
-  //      (SELECT id FROM stores WHERE managed_by = $3)
-  //      (store managers see orders for their store's routes)
-  //    - If userRole in ('admin', 'dispatcher'): no filter (see all)
-  // 5. Order by orders.order_date DESC.
-  // 6. Apply pagination: LIMIT $1 OFFSET $2.
-  //
-  // IMPORTANT: Use parameterized values via pg.
-  // IMPORTANT: The role-based WHERE clause MUST be enforced at
-  // the database level. Hiding orders in the UI is not sufficient.
+  let whereClause = '';
+  const params: any[] = [limit, offset];
 
-  const result = await pool.query(`/* YOUR SQL QUERY HERE */`, [limit, offset, userId]);
-  const countResult = await pool.query(`/* YOUR SQL COUNT QUERY HERE */`, [userId]);
+  if (userRole === 'customer') {
+    params.push(userId);
+    whereClause = 'WHERE o.customer_id = $3';
+  } else if (userRole === 'store_manager') {
+    params.push(userId);
+    whereClause = 'WHERE r.store_id IN (SELECT id FROM stores WHERE managed_by = $3)';
+  }
+
+  const query = `
+    SELECT 
+      o.id,
+      o.customer_id,
+      u.name AS customer_name,
+      o.order_date,
+      o.requested_delivery_date,
+      o.delivery_address,
+      o.route_id,
+      r.area_name AS route_area,
+      o.status,
+      o.created_at,
+      o.updated_at
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.id
+    JOIN users u ON c.id = u.id
+    JOIN routes r ON o.route_id = r.id
+    ${whereClause}
+    ORDER BY o.order_date DESC
+    LIMIT $1 OFFSET $2
+  `;
+
+  let countQuery = 'SELECT COUNT(*) AS count FROM orders o JOIN routes r ON o.route_id = r.id';
+  const countParams: any[] = [];
+  if (userRole === 'customer') {
+    countParams.push(userId);
+    countQuery += ' WHERE o.customer_id = $1';
+  } else if (userRole === 'store_manager') {
+    countParams.push(userId);
+    countQuery += ' WHERE r.store_id IN (SELECT id FROM stores WHERE managed_by = $1)';
+  }
+
+  const result = await pool.query(query, params);
+  const countResult = await pool.query(countQuery, countParams);
 
   return {
     orders: result.rows,
@@ -60,33 +75,58 @@ export async function getOrders(userId: string, userRole: string, page: number =
   };
 }
 
-// Get a single order with its items and delivery details.
+// Get a single order with line items
 export async function getOrderById(orderId: string, userId: string, userRole: string) {
-  // TODO: Write the PostgreSQL query here.
-  //
-  // This query should:
-  // 1. Select the order from "orders" WHERE id = $1.
-  // 2. Apply data-level authorization:
-  //    - If customer: also check AND customer_id = $2
-  // 3. Join with customer info, route info.
-  //
-  // Then separately query order items:
-  // 4. Select from "order_items" WHERE order_id = $1.
-  // 5. JOIN with "products" to get product name and price.
-  //
-  // Optionally query delivery items:
-  // 6. Select from "delivery_items" WHERE order_item_id IN
-  //    (SELECT id FROM order_items WHERE order_id = $1).
-  //
-  // IMPORTANT: Use parameterized values via pg.
+  let whereClause = 'WHERE o.id = $1';
+  const params: any[] = [orderId];
 
-  const orderResult = await pool.query(`/* YOUR SQL QUERY HERE — order */`, [orderId, userId]);
+  if (userRole === 'customer') {
+    params.push(userId);
+    whereClause += ' AND o.customer_id = $2';
+  }
+
+  const orderQuery = `
+    SELECT 
+      o.id,
+      o.customer_id,
+      u.name AS customer_name,
+      c.phone_no AS customer_phone,
+      o.order_date,
+      o.requested_delivery_date,
+      o.delivery_address,
+      o.route_id,
+      r.area_name AS route_area,
+      o.status,
+      o.created_at,
+      o.updated_at
+    FROM orders o
+    JOIN customers c ON o.customer_id = c.id
+    JOIN users u ON c.id = u.id
+    JOIN routes r ON o.route_id = r.id
+    ${whereClause}
+  `;
+
+  const orderResult = await pool.query(orderQuery, params);
 
   if (orderResult.rows.length === 0) {
     throw new NotFoundError('Order');
   }
 
-  const itemsResult = await pool.query(`/* YOUR SQL QUERY HERE — items */`, [orderId]);
+  const itemsQuery = `
+    SELECT 
+      oi.id,
+      oi.order_id,
+      oi.product_id,
+      p.name AS product_name,
+      p.unit_price,
+      p.unit_space_consumption,
+      oi.quantity,
+      (oi.quantity * p.unit_price) AS line_total
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.id
+    WHERE oi.order_id = $1
+  `;
+  const itemsResult = await pool.query(itemsQuery, [orderId]);
 
   return {
     ...orderResult.rows[0],
@@ -94,75 +134,43 @@ export async function getOrderById(orderId: string, userId: string, userRole: st
   };
 }
 
-// Place a new order (customer only).
-// This implements the order placement workflow from SRS §4.1.
+// Place a new order with atomic transaction
 export async function createOrder(data: CreateOrderData) {
-  // Business Rule 1: 7-day advance requirement (SRS §6.4)
   const requestedDate = new Date(data.requested_delivery_date);
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + ORDER_ADVANCE_DAYS);
 
   if (requestedDate < minDate) {
     throw new ValidationError(
-      `Orders must be placed at least ${ORDER_ADVANCE_DAYS} days before the requested delivery date. ` +
-      `Earliest allowed date: ${minDate.toISOString().split('T')[0]}`
+      `Orders must be placed at least ${ORDER_ADVANCE_DAYS} days before requested delivery date.`
     );
   }
 
-  // Use a transaction because we need to insert the order
-  // AND all its items atomically.
   const client = await pool.connect();
 
   try {
     await client.query('BEGIN');
 
-    // Business Rule 2: Validate route exists (SRS §6.4)
-    // TODO: Write the PostgreSQL query to verify route_id exists.
-    //
-    // SELECT id FROM routes WHERE id = $1
-    //
-    // If no row returned, the delivery address is not covered
-    // by any existing route. Reject the order.
-    //
-    // IMPORTANT: Use parameterized values via pg.
-
-    const routeCheck = await client.query(`/* YOUR SQL QUERY HERE — check route */`, [data.route_id]);
-
+    // 1. Verify route exists
+    const routeCheck = await client.query('SELECT id FROM routes WHERE id = $1', [data.route_id]);
     if (routeCheck.rows.length === 0) {
       throw new ValidationError('Delivery address is not covered by any existing route.');
     }
 
-    // Insert the order
-    // TODO: Write the PostgreSQL INSERT for the order.
-    //
-    // INSERT INTO orders (customer_id, order_date, requested_delivery_date,
-    //   delivery_address, route_id, status)
-    // VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, 'Pending')
-    // RETURNING *
-    //
-    // IMPORTANT: Use parameterized values via pg.
-
+    // 2. Insert order
     const orderResult = await client.query(
-      `/* YOUR SQL INSERT QUERY HERE — order */`,
+      `INSERT INTO orders (customer_id, order_date, requested_delivery_date, delivery_address, route_id, status)
+       VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, 'Pending')
+       RETURNING *`,
       [data.customer_id, data.requested_delivery_date, data.delivery_address, data.route_id]
     );
-
     const order = orderResult.rows[0];
 
-    // Insert each order item
+    // 3. Insert line items
     for (const item of data.items) {
-      // TODO: Write the PostgreSQL INSERT for each order item.
-      //
-      // INSERT INTO order_items (order_id, product_id, quantity)
-      // VALUES ($1, $2, $3)
-      //
-      // Validate that product_id exists:
-      // SELECT id FROM products WHERE id = $1
-      //
-      // IMPORTANT: Use parameterized values via pg.
-
       await client.query(
-        `/* YOUR SQL INSERT QUERY HERE — order item */`,
+        `INSERT INTO order_items (order_id, product_id, quantity)
+         VALUES ($1, $2, $3)`,
         [order.id, item.product_id, item.quantity]
       );
     }
@@ -177,19 +185,13 @@ export async function createOrder(data: CreateOrderData) {
   }
 }
 
-// Update order status (dispatcher/store manager).
+// Update order status
 export async function updateOrderStatus(orderId: string, status: string, changedBy: string) {
-  // TODO: Write the PostgreSQL UPDATE query.
-  //
-  // UPDATE orders SET status = $2, updated_at = CURRENT_TIMESTAMP
-  // WHERE id = $1 RETURNING *
-  //
-  // The AFTER UPDATE trigger on orders will automatically
-  // insert a row into order_status_history.
-  //
-  // IMPORTANT: Use parameterized values via pg.
-
-  const result = await pool.query(`/* YOUR SQL UPDATE QUERY HERE */`, [orderId, status]);
+  const result = await pool.query(
+    `UPDATE orders SET status = $2, updated_at = CURRENT_TIMESTAMP
+     WHERE id = $1 RETURNING *`,
+    [orderId, status]
+  );
 
   if (result.rows.length === 0) {
     throw new NotFoundError('Order');
