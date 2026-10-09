@@ -7,41 +7,88 @@ import { NotFoundError } from '../utils/errors.js';
 export async function getAllTrainTrips(page: number = 1, limit: number = 20) {
   const offset = (page - 1) * limit;
 
-  // TODO: Write the PostgreSQL query here.
-  //
-  // This query should:
-  // 1. Select all columns from "train_trips".
-  // 2. LEFT JOIN with "stores" ON train_trips.destination_store_id = stores.id
-  //    to include destination store name.
-  // 3. Calculate remaining_capacity for each trip:
-  //    max_capacity - COALESCE(SUM of allocated space, 0)
-  //    This requires a subquery or LEFT JOIN with order_train_allocations
-  //    and products to compute allocated space.
-  // 4. Order by trip_date DESC, departure_time ASC.
-  // 5. Apply pagination: LIMIT $1 OFFSET $2.
-  //
-  // IMPORTANT: Use parameterized values via pg.
-
-  const result = await pool.query(`/* YOUR SQL QUERY HERE */`, [limit, offset]);
-  const countResult = await pool.query(`/* YOUR SQL COUNT QUERY HERE */`);
+  const result = await pool.query(
+    `SELECT 
+       tt.id,
+       tt.from_city,
+       tt.to_city,
+       tt.destination_store_id,
+       s.name AS destination_store_name,
+       tt.trip_date,
+       tt.departure_time,
+       tt.arrival_time,
+       tt.max_capacity,
+       (tt.max_capacity - COALESCE(alloc.allocated_space, 0))::numeric AS remaining_capacity,
+       tt.created_at,
+       tt.updated_at
+     FROM train_trips tt
+     LEFT JOIN stores s ON tt.destination_store_id = s.id
+     LEFT JOIN (
+       SELECT 
+         ota.train_trip_id,
+         SUM(ota.quantity_allocated * p.unit_space_consumption) AS allocated_space
+       FROM order_train_allocations ota
+       JOIN order_items oi ON ota.order_item_id = oi.id
+       JOIN products p ON oi.product_id = p.id
+       GROUP BY ota.train_trip_id
+     ) alloc ON tt.id = alloc.train_trip_id
+     ORDER BY tt.trip_date DESC, tt.departure_time ASC
+     LIMIT $1 OFFSET $2`,
+    [limit, offset]
+  );
+  const countResult = await pool.query(`SELECT COUNT(*) AS count FROM train_trips`);
   return { trainTrips: result.rows, total: parseInt(countResult.rows[0]?.count || '0', 10), page, limit };
 }
 
 export async function getTrainTripById(tripId: string) {
-  // TODO: Write the PostgreSQL query.
-  // 1. Select trip details with destination store info.
-  // 2. Calculate remaining capacity.
-  // 3. Fetch allocations for this trip (order items allocated).
-  //
-  // IMPORTANT: Use parameterized values via pg.
-
-  const result = await pool.query(`/* YOUR SQL QUERY HERE */`, [tripId]);
+  const result = await pool.query(
+    `SELECT 
+       tt.id,
+       tt.from_city,
+       tt.to_city,
+       tt.destination_store_id,
+       s.name AS destination_store_name,
+       tt.trip_date,
+       tt.departure_time,
+       tt.arrival_time,
+       tt.max_capacity,
+       (tt.max_capacity - COALESCE(alloc.allocated_space, 0))::numeric AS remaining_capacity,
+       tt.created_at,
+       tt.updated_at
+     FROM train_trips tt
+     LEFT JOIN stores s ON tt.destination_store_id = s.id
+     LEFT JOIN (
+       SELECT 
+         ota.train_trip_id,
+         SUM(ota.quantity_allocated * p.unit_space_consumption) AS allocated_space
+       FROM order_train_allocations ota
+       JOIN order_items oi ON ota.order_item_id = oi.id
+       JOIN products p ON oi.product_id = p.id
+       WHERE ota.train_trip_id = $1
+       GROUP BY ota.train_trip_id
+     ) alloc ON tt.id = alloc.train_trip_id
+     WHERE tt.id = $1`,
+    [tripId]
+  );
   if (result.rows.length === 0) throw new NotFoundError('Train trip');
 
-  // Fetch allocations for this trip
-  // TODO: SELECT from order_train_allocations WHERE train_trip_id = $1
-  // JOIN order_items and products for details.
-  const allocResult = await pool.query(`/* YOUR SQL QUERY HERE — allocations */`, [tripId]);
+  const allocResult = await pool.query(
+    `SELECT 
+       ota.id,
+       ota.order_item_id,
+       ota.train_trip_id,
+       ota.quantity_allocated,
+       oi.order_id,
+       oi.product_id,
+       p.name AS product_name,
+       p.unit_space_consumption,
+       (ota.quantity_allocated * p.unit_space_consumption)::numeric AS total_space_consumed
+     FROM order_train_allocations ota
+     JOIN order_items oi ON ota.order_item_id = oi.id
+     JOIN products p ON oi.product_id = p.id
+     WHERE ota.train_trip_id = $1`,
+    [tripId]
+  );
 
   return { ...result.rows[0], allocations: allocResult.rows };
 }
@@ -50,27 +97,43 @@ export async function createTrainTrip(data: {
   to_city: string; destination_store_id?: string; trip_date: string;
   departure_time: string; arrival_time: string; max_capacity: number;
 }) {
-  // TODO: Write the PostgreSQL INSERT query.
-  //
-  // INSERT INTO train_trips (from_city, to_city, destination_store_id,
-  //   trip_date, departure_time, arrival_time, max_capacity)
-  // VALUES ('Kandy', $1, $2, $3, $4, $5, $6) RETURNING *
-  //
-  // from_city is always 'Kandy' (SRS §2.7).
-  // IMPORTANT: Use parameterized values via pg.
-
-  const result = await pool.query(`/* YOUR SQL INSERT QUERY HERE */`, [
-    data.to_city, data.destination_store_id || null, data.trip_date,
-    data.departure_time, data.arrival_time, data.max_capacity
-  ]);
+  const result = await pool.query(
+    `INSERT INTO train_trips (
+       from_city, to_city, destination_store_id,
+       trip_date, departure_time, arrival_time, max_capacity
+     )
+     VALUES ('Kandy', $1, $2, $3, $4, $5, $6)
+     RETURNING *`,
+    [
+      data.to_city, data.destination_store_id || null, data.trip_date,
+      data.departure_time, data.arrival_time, data.max_capacity
+    ]
+  );
   return result.rows[0];
 }
 
 export async function updateTrainTrip(tripId: string, data: Record<string, unknown>) {
-  // TODO: Write the PostgreSQL UPDATE query.
-  // IMPORTANT: Use parameterized values via pg.
-
-  const result = await pool.query(`/* YOUR SQL UPDATE QUERY HERE */`, [tripId]);
+  const result = await pool.query(
+    `UPDATE train_trips
+     SET to_city = COALESCE($2, to_city),
+         destination_store_id = COALESCE($3, destination_store_id),
+         trip_date = COALESCE($4, trip_date),
+         departure_time = COALESCE($5, departure_time),
+         arrival_time = COALESCE($6, arrival_time),
+         max_capacity = COALESCE($7, max_capacity),
+         updated_at = CURRENT_TIMESTAMP
+     WHERE id = $1
+     RETURNING *`,
+    [
+      tripId,
+      data.to_city ?? null,
+      data.destination_store_id ?? null,
+      data.trip_date ?? null,
+      data.departure_time ?? null,
+      data.arrival_time ?? null,
+      data.max_capacity ?? null,
+    ]
+  );
   if (result.rows.length === 0) throw new NotFoundError('Train trip');
   return result.rows[0];
 }

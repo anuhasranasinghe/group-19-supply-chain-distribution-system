@@ -12,21 +12,35 @@ import { NotFoundError, ConflictError } from '../utils/errors.js';
 export async function getAllocations(page: number = 1, limit: number = 20) {
   const offset = (page - 1) * limit;
 
-  // TODO: Write the PostgreSQL query here.
-  //
-  // This query should:
-  // 1. Select from "order_train_allocations".
-  // 2. JOIN with "order_items" to get order info.
-  // 3. JOIN with "products" to get product name.
-  // 4. JOIN with "train_trips" to get trip info.
-  // 5. JOIN with "orders" to get customer and status info.
-  // 6. Order by train_trips.trip_date ASC.
-  // 7. Apply pagination.
-  //
-  // IMPORTANT: Use parameterized values via pg.
-
-  const result = await pool.query(`/* YOUR SQL QUERY HERE */`, [limit, offset]);
-  const countResult = await pool.query(`/* YOUR SQL COUNT QUERY HERE */`);
+  const result = await pool.query(
+    `SELECT 
+       ota.id,
+       ota.order_item_id,
+       ota.train_trip_id,
+       ota.quantity_allocated,
+       (ota.quantity_allocated * p.unit_space_consumption)::numeric AS allocated_space,
+       oi.order_id,
+       oi.product_id,
+       p.name AS product_name,
+       p.unit_space_consumption,
+       tt.from_city,
+       tt.to_city,
+       tt.trip_date,
+       tt.departure_time,
+       tt.arrival_time,
+       o.customer_id,
+       o.status AS order_status,
+       o.requested_delivery_date
+     FROM order_train_allocations ota
+     JOIN order_items oi ON ota.order_item_id = oi.id
+     JOIN products p ON oi.product_id = p.id
+     JOIN train_trips tt ON ota.train_trip_id = tt.id
+     JOIN orders o ON oi.order_id = o.id
+     ORDER BY tt.trip_date ASC, tt.departure_time ASC
+     LIMIT $1 OFFSET $2`,
+    [limit, offset]
+  );
+  const countResult = await pool.query(`SELECT COUNT(*) AS count FROM order_train_allocations`);
   return { allocations: result.rows, total: parseInt(countResult.rows[0]?.count || '0', 10), page, limit };
 }
 
@@ -39,51 +53,40 @@ export async function createAllocation(data: {
   train_trip_id: string;
   quantity_allocated?: number;
 }) {
-  // TODO: Write the PostgreSQL query here.
-  //
-  // Option A (Recommended): Call the stored procedure:
-  //   SELECT assign_order_to_train($1, $2)
-  //   This handles capacity checking and overflow automatically.
-  //
-  // Option B (If procedure not yet implemented): Direct INSERT:
-  //   1. First check remaining capacity on the train trip:
-  //      SELECT tt.max_capacity - COALESCE(SUM(ota.quantity_allocated *
-  //        p.unit_space_consumption), 0) AS remaining_capacity
-  //      FROM train_trips tt
-  //      LEFT JOIN order_train_allocations ota ON ota.train_trip_id = tt.id
-  //      LEFT JOIN order_items oi ON ota.order_item_id = oi.id
-  //      LEFT JOIN products p ON oi.product_id = p.id
-  //      WHERE tt.id = $1
-  //      GROUP BY tt.max_capacity
-  //
-  //   2. Calculate required space for the order item:
-  //      SELECT oi.quantity, p.unit_space_consumption
-  //      FROM order_items oi
-  //      JOIN products p ON oi.product_id = p.id
-  //      WHERE oi.id = $1
-  //
-  //   3. If fits: INSERT INTO order_train_allocations
-  //   4. If doesn't fit: RAISE error or find next trip
-  //
-  // The BEFORE INSERT trigger on order_train_allocations will
-  // also validate the capacity (defense in depth).
-  //
-  // IMPORTANT: This should run in a TRANSACTION.
-  // IMPORTANT: Use parameterized values via pg.
-
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    const result = await client.query(
-      `/* YOUR SQL QUERY/PROCEDURE CALL HERE */`,
-      [data.order_item_id, data.train_trip_id, data.quantity_allocated]
-    );
+    let allocation;
+    if (data.quantity_allocated !== undefined && data.quantity_allocated !== null) {
+      const result = await client.query(
+        `INSERT INTO order_train_allocations (order_item_id, train_trip_id, quantity_allocated)
+         VALUES ($1, $2, $3)
+         RETURNING *`,
+        [data.order_item_id, data.train_trip_id, data.quantity_allocated]
+      );
+      allocation = result.rows[0];
+    } else {
+      await client.query(
+        `SELECT assign_order_to_train($1::uuid, $2::uuid)`,
+        [data.order_item_id, data.train_trip_id]
+      );
+      const result = await client.query(
+        `SELECT * FROM order_train_allocations
+         WHERE order_item_id = $1 AND train_trip_id = $2
+         ORDER BY id DESC LIMIT 1`,
+        [data.order_item_id, data.train_trip_id]
+      );
+      allocation = result.rows[0];
+    }
 
     await client.query('COMMIT');
-    return result.rows[0];
+    return allocation;
   } catch (error) {
     await client.query('ROLLBACK');
+    if (error instanceof Error && error.message.includes('capacity')) {
+      throw new ConflictError(error.message);
+    }
     throw error;
   } finally {
     client.release();
