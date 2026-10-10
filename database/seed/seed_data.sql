@@ -326,6 +326,89 @@ BEGIN
     )
     ON CONFLICT (id) DO NOTHING;
 
+    -- 13. DELIVERY ITEMS: Pending and Scheduled examples
+    INSERT INTO delivery_items (
+        order_item_id,
+        truck_trip_id,
+        quantity,
+        delivery_status,
+        delivered_at
+    )
+    SELECT
+        oi.id,
+        trip.id,
+        oi.quantity,
+        o.status,
+        NULL
+    FROM orders o
+    JOIN order_items oi ON oi.order_id = o.id
+    JOIN LATERAL (
+        SELECT tt.id
+        FROM truck_trips tt
+        WHERE tt.route_id = o.route_id
+          AND tt.status = 'Scheduled'
+          AND tt.start_time::date <= o.requested_delivery_date
+        ORDER BY tt.start_time, tt.id
+        LIMIT 1
+    ) trip ON TRUE
+    WHERE o.status IN ('Pending', 'Scheduled')
+      AND NOT EXISTS (
+          SELECT 1
+          FROM delivery_items di
+          WHERE di.order_item_id = oi.id
+      );
+
+        -- Historical completed trip for the Delivered example
+    INSERT INTO truck_trips (
+        id, truck_id, driver_id, assistant_id, route_id,
+        start_time, end_time, status
+    ) VALUES (
+        '91000000-0000-0000-0000-000000000001',
+        tr_01, u_drv1, u_ast1, rt_col1,
+        (CURRENT_DATE - 14) + TIME '09:00',
+        (CURRENT_DATE - 14) + TIME '13:00',
+        'Completed'
+    )
+    ON CONFLICT (id) DO NOTHING;
+
+    -- Order placed two weeks before its historical delivery date
+    INSERT INTO orders (
+        id, customer_id, order_date, requested_delivery_date,
+        delivery_address, route_id, status
+    ) VALUES (
+        '91000000-0000-0000-0000-000000000002',
+        u_cust1,
+        (CURRENT_DATE - 28) + TIME '10:00',
+        CURRENT_DATE - 14,
+        'Historical seed delivery address, Colombo',
+        rt_col1,
+        'Delivered'
+    )
+    ON CONFLICT (id) DO NOTHING;
+
+    INSERT INTO order_items (
+        id, order_id, product_id, quantity
+    ) VALUES (
+        '91000000-0000-0000-0000-000000000003',
+        '91000000-0000-0000-0000-000000000002',
+        p_det1kg,
+        5
+    )
+    ON CONFLICT (id) DO NOTHING;
+
+    INSERT INTO delivery_items (
+        id, order_item_id, truck_trip_id, quantity,
+        delivery_status, delivered_at
+    ) VALUES (
+        '91000000-0000-0000-0000-000000000004',
+        '91000000-0000-0000-0000-000000000003',
+        '91000000-0000-0000-0000-000000000001',
+        5,
+        'Delivered',
+        (CURRENT_DATE - 14) + TIME '12:00'
+    )
+    ON CONFLICT (id) DO NOTHING;
+
     -- 14. INVENTORY
     INSERT INTO inventory (id, store_id, product_id, quantity) VALUES
     (gen_random_uuid(), st_colombo, p_det1kg, 500),
