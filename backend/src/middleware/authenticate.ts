@@ -48,22 +48,9 @@ export async function authenticate(
     // payload alone, because the user might have been deleted
     // or their role might have changed since the JWT was issued.
 
-    // TODO: Write the PostgreSQL query here.
-    //
-    // This query should:
-    // 1. Select the user from the "users" table by id.
-    // 2. Return id, username, name, system_role, created_at, updated_at.
-    // 3. Do NOT return password_hash — we don't need it here.
-    // 4. Use parameterized query: pool.query('SELECT ... WHERE id = $1', [userId])
-    //
-    // IMPORTANT: Use parameterized values via pg. Do NOT concatenate
-    // user input directly into the SQL string.
-    //
-    // Expected return: A single user row or no rows if the user
-    // was deleted after the JWT was issued.
 
     const result = await pool.query(
-      `/* YOUR SQL QUERY HERE */`,
+      "SELECT id, username, name, system_role, created_at, updated_at FROM users WHERE id = $1",
       [payload.userId]
     );
 
