@@ -29,7 +29,16 @@ export function validate(schema: ZodSchema, target: ValidationTarget = 'body') {
       // request data with the parsed version so controllers
       // get clean, typed data.
       const parsed = schema.parse(req[target]);
-      req[target] = parsed;
+      if (target === 'query') {
+        Object.defineProperty(req, 'query', {
+          value: parsed,
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        });
+      } else {
+        req[target] = parsed;
+      }
       next();
     } catch (error) {
       if (error instanceof ZodError) {
