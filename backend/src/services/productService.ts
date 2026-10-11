@@ -23,18 +23,12 @@ interface UpdateProductData {
 export async function getAllProducts(page: number = 1, limit: number = 20) {
   const offset = (page - 1) * limit;
 
-  // TODO: Write the PostgreSQL query here.
-  //
-  // This query should:
-  // 1. Select all columns from the "products" table.
-  // 2. Order by name ASC for alphabetical listing.
-  // 3. Apply pagination: LIMIT $1 OFFSET $2
-  // 4. Also run a COUNT(*) for total products.
-  //
-  // IMPORTANT: Use parameterized values via pg.
-
-  const result = await pool.query(`/* YOUR SQL QUERY HERE */`, [limit, offset]);
-  const countResult = await pool.query(`/* YOUR SQL COUNT QUERY HERE */`);
+  const result = await pool.query(`SELECT *
+     FROM products
+     ORDER BY name ASC, id ASC
+     LIMIT $1 OFFSET $2`, [limit, offset]);
+  const countResult = await pool.query(`SELECT COUNT(*) AS count
+     FROM products`);
 
   return {
     products: result.rows,
@@ -45,13 +39,10 @@ export async function getAllProducts(page: number = 1, limit: number = 20) {
 }
 
 export async function getProductById(productId: string) {
-  // TODO: Write the PostgreSQL query here.
-  //
-  // This query should:
-  // 1. Select all columns from "products" WHERE id = $1.
-  // 2. Use parameterized query.
 
-  const result = await pool.query(`/* YOUR SQL QUERY HERE */`, [productId]);
+  const result = await pool.query(`SELECT *
+     FROM products
+     WHERE id = $1`, [productId]);
 
   if (result.rows.length === 0) {
     throw new NotFoundError('Product');
@@ -61,15 +52,14 @@ export async function getProductById(productId: string) {
 }
 
 export async function createProduct(data: CreateProductData) {
-  // TODO: Write the PostgreSQL INSERT query here.
-  //
-  // INSERT INTO products (name, unit_price, unit_space_consumption)
-  // VALUES ($1, $2, $3)
-  // RETURNING *
-  //
-  // IMPORTANT: Use parameterized values via pg.
 
-  const result = await pool.query(`/* YOUR SQL INSERT QUERY HERE */`, [
+  const result = await pool.query(`INSERT INTO products (
+       name,
+       unit_price,
+       unit_space_consumption
+     )
+     VALUES ($1, $2, $3)
+     RETURNING *`, [
     data.name, data.unit_price, data.unit_space_consumption
   ]);
 
@@ -77,16 +67,17 @@ export async function createProduct(data: CreateProductData) {
 }
 
 export async function updateProduct(productId: string, data: UpdateProductData) {
-  // TODO: Write the PostgreSQL UPDATE query here.
-  //
-  // UPDATE products SET name = COALESCE($2, name), ...
-  // WHERE id = $1
-  // RETURNING *
-  //
-  // Use COALESCE to only update provided fields.
-  // IMPORTANT: Use parameterized values via pg.
 
-  const result = await pool.query(`/* YOUR SQL UPDATE QUERY HERE */`, [
+  const result = await pool.query(`UPDATE products
+     SET name = COALESCE($2, name),
+         unit_price = COALESCE($3, unit_price),
+         unit_space_consumption = COALESCE(
+           $4,
+           unit_space_consumption
+         ),
+         updated_at = CURRENT_TIMESTAMP
+     WHERE id = $1
+     RETURNING *`, [
     productId, data.name, data.unit_price, data.unit_space_consumption
   ]);
 
@@ -98,17 +89,10 @@ export async function updateProduct(productId: string, data: UpdateProductData) 
 }
 
 export async function deleteProduct(productId: string) {
-  // TODO: Write the PostgreSQL DELETE query here.
-  //
-  // DELETE FROM products WHERE id = $1 RETURNING id
-  //
-  // Note: If this product has been ordered (referenced by order_items),
-  // the FK constraint should prevent deletion (ON DELETE RESTRICT).
-  // The database will raise an error that our error handler will catch.
-  //
-  // IMPORTANT: Use parameterized values via pg.
 
-  const result = await pool.query(`/* YOUR SQL DELETE QUERY HERE */`, [productId]);
+  const result = await pool.query(`DELETE FROM products
+     WHERE id = $1
+     RETURNING id`, [productId]);
 
   if (result.rows.length === 0) {
     throw new NotFoundError('Product');
