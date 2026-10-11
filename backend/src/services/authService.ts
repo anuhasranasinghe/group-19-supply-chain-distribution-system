@@ -104,7 +104,7 @@ export async function register(data: RegisterData): Promise<LoginResult> {
     const newUser = userResult.rows[0];
 
     await client.query(
-      "INSERT INTO customers(id, city, street_name, postal_code, phone_no) VALUES ($1, $2, $3, $4, $5)",
+      "INSERT INTO customers(id, street_name, city, postal_code, phone_no) VALUES ($1, $2, $3, $4, $5)",
       [newUser.id, data.street_name || null, data.city, data.postal_code || null, data.phone_no || null]
     );
 

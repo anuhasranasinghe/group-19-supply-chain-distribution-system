@@ -85,7 +85,10 @@ export async function updateRoute(routeId: string, data: { store_id?: string; ma
        area_name,
        created_at,
        updated_at`, [
-    routeId, data.store_id, data.max_delivery_time, data.area_name
+    routeId,
+    data.store_id ?? null,
+    data.max_delivery_time ?? null,
+    data.area_name ?? null
   ]);
   if (result.rows.length === 0) throw new NotFoundError('Route');
   return result.rows[0];

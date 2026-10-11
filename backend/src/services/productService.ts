@@ -78,7 +78,10 @@ export async function updateProduct(productId: string, data: UpdateProductData) 
          updated_at = CURRENT_TIMESTAMP
      WHERE id = $1
      RETURNING *`, [
-    productId, data.name, data.unit_price, data.unit_space_consumption
+    productId,
+    data.name ?? null,
+    data.unit_price ?? null,
+    data.unit_space_consumption ?? null
   ]);
 
   if (result.rows.length === 0) {

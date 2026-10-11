@@ -8,7 +8,7 @@ export async function getAllStores(page: number = 1, limit: number = 20) {
   const offset = (page - 1) * limit;
 
 
-  const result = await pool.query( `SELECT
+  const result = await pool.query(`SELECT
        s.*,
        u.name AS manager_name
      FROM stores AS s
@@ -60,7 +60,7 @@ export async function createStore(data: { name: string; city: string; location?:
 }
 
 export async function updateStore(storeId: string, data: { name?: string; city?: string; location?: string; managed_by?: string | null }) {
-
+  const hasManagedBy = data.managed_by !== undefined;
 
   const result = await pool.query(`UPDATE stores AS s
      SET name = COALESCE($2::varchar, s.name),
@@ -73,7 +73,12 @@ export async function updateStore(storeId: string, data: { name?: string; city?:
          updated_at = CURRENT_TIMESTAMP
      WHERE s.id = $1::uuid
      RETURNING s.*`, [
-    storeId, data.name, data.city, data.location, data.managed_by
+    storeId,
+    data.name ?? null,
+    data.city ?? null,
+    data.location ?? null,
+    hasManagedBy,
+    data.managed_by ?? null,
   ]);
   if (result.rows.length === 0) throw new NotFoundError('Store');
   return result.rows[0];
