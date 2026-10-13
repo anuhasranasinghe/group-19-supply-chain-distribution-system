@@ -180,7 +180,7 @@ export function UsersPage() {
       <div className="card">
         {isLoading ? <div className="loading-container"><div className="spinner" /></div>
         : users.length === 0 ? (
-          <div className="empty-state"><Users className="empty-state-icon" /><p className="empty-state-title">No users found</p><p>Users will appear once database queries are implemented</p></div>
+          <div className="empty-state"><Users className="empty-state-icon" /><p className="empty-state-title">No users found</p><p>No registered user accounts match the current filter. Click "Add User" above to create one.</p></div>
         ) : (
           <table className="data-table">
             <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Created</th></tr></thead>

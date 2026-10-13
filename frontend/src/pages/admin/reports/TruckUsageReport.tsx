@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { reportApi } from '../../../api/client';
-import { exportToCsv, chartTooltipStyle } from './reportUtils';
+import { exportToCsv, exportToPdf, chartTooltipStyle } from './reportUtils';
 import {
   Truck,
   Clock,
   Navigation,
   Download,
+  Printer,
   RotateCw,
   Calendar,
   Activity,
@@ -144,11 +145,18 @@ export function TruckUsageReport() {
             <RotateCw size={14} className={isLoading ? 'animate-spin' : ''} /> Refresh
           </button>
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-secondary btn-sm"
             onClick={handleExport}
             disabled={data.length === 0}
           >
             <Download size={14} /> Export CSV
+          </button>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => exportToPdf('Truck_Usage')}
+            disabled={data.length === 0}
+          >
+            <Printer size={14} /> Export PDF
           </button>
         </div>
       </div>

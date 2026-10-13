@@ -109,7 +109,7 @@ export function TrucksPage() {
       <div className="card">
         {isLoading ? <div className="loading-container"><div className="spinner" /></div>
         : trucks.length === 0 ? (
-          <div className="empty-state"><TruckIcon className="empty-state-icon" /><p className="empty-state-title">No trucks found</p><p>Fleet data will appear once queries are implemented</p></div>
+          <div className="empty-state"><TruckIcon className="empty-state-icon" /><p className="empty-state-title">No trucks found</p><p>No delivery trucks registered in the fleet. Click "Add Truck" above to register a vehicle.</p></div>
         ) : (
           <table className="data-table">
             <thead><tr><th>Vehicle No</th><th>Capacity</th></tr></thead>

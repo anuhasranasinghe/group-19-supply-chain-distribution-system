@@ -13,6 +13,7 @@
 
 import { pool } from '../database/connection.js';
 import { NotFoundError, ConflictError } from '../utils/errors.js';
+import { createNotification } from './notificationService.js';
 
 interface CreateTruckTripData {
   truck_id: string;
@@ -188,6 +189,24 @@ export async function createTruckTrip(data: CreateTruckTripData) {
     }
 
     await client.query('COMMIT');
+
+    try {
+      await createNotification(
+        data.driver_id,
+        'Trip Assignment',
+        `You have been scheduled as driver for a truck trip starting ${new Date(data.start_time).toLocaleString()}.`,
+        'assignment'
+      );
+      await createNotification(
+        data.assistant_id,
+        'Trip Assignment',
+        `You have been scheduled as assistant for a truck trip starting ${new Date(data.start_time).toLocaleString()}.`,
+        'assignment'
+      );
+    } catch {
+      // Non-blocking notification
+    }
+
     return trip;
   } catch (error) {
     await client.query('ROLLBACK');

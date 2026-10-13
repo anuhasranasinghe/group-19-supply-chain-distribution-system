@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { reportApi } from '../../../api/client';
 import { formatCurrency } from '../../../lib/utils';
-import { exportToCsv, chartTooltipStyle, CHART_COLORS } from './reportUtils';
+import { exportToCsv, exportToPdf, chartTooltipStyle, CHART_COLORS } from './reportUtils';
 import {
   MapPin,
   TrendingUp,
   Package,
   ShoppingCart,
   Download,
+  Printer,
   RotateCw,
   Calendar,
   Building,
@@ -228,11 +229,18 @@ export function GeographicSalesReport() {
             <RotateCw size={14} className={isLoading ? 'animate-spin' : ''} /> Refresh
           </button>
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-secondary btn-sm"
             onClick={handleExport}
             disabled={(viewMode === 'city' ? cityData.length : routeData.length) === 0}
           >
             <Download size={14} /> Export CSV
+          </button>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => exportToPdf(`Geographic_${viewMode === 'city' ? 'City' : 'Route'}_Sales`)}
+            disabled={(viewMode === 'city' ? cityData.length : routeData.length) === 0}
+          >
+            <Printer size={14} /> Export PDF
           </button>
         </div>
       </div>

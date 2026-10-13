@@ -120,7 +120,7 @@ export function StoresPage() {
       <div className="card">
         {isLoading ? <div className="loading-container"><div className="spinner" /></div>
         : stores.length === 0 ? (
-          <div className="empty-state"><StoreIcon className="empty-state-icon" /><p className="empty-state-title">No stores found</p><p>Stores will appear once database queries are implemented</p></div>
+          <div className="empty-state"><StoreIcon className="empty-state-icon" /><p className="empty-state-title">No stores found</p><p>No regional stores currently registered. Click "Add Store" above to register a new depot.</p></div>
         ) : (
           <table className="data-table">
             <thead><tr><th>Name</th><th>City</th><th>Location</th><th>Manager</th></tr></thead>

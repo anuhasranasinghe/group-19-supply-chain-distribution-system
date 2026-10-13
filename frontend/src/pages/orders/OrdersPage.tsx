@@ -62,9 +62,34 @@ export function OrdersPage() {
     }
   };
 
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [statusFeedback, setStatusFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const canManageStatus = ['admin', 'dispatcher', 'store_manager'].includes(user?.system_role || '');
+
+  const handleUpdateOrderStatus = async (newStatus: string) => {
+    if (!selectedOrder) return;
+    setIsUpdatingStatus(true);
+    setStatusFeedback(null);
+    try {
+      await orderApi.updateStatus(selectedOrder.id, newStatus);
+      setSelectedOrder({ ...selectedOrder, status: newStatus as any });
+      setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, status: newStatus as any } : o));
+      setStatusFeedback({ type: 'success', message: `Order status updated to "${newStatus}" successfully.` });
+    } catch (err: any) {
+      setStatusFeedback({
+        type: 'error',
+        message: err.response?.data?.error?.message || err.message || 'Failed to update order status',
+      });
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
   const handleCloseModal = () => {
     setSelectedOrder(null);
     setDetailError('');
+    setStatusFeedback(null);
   };
 
   return (
@@ -312,7 +337,59 @@ export function OrdersPage() {
                       selectedOrder.items?.reduce((acc, it) => acc + Number(it.line_total || it.quantity * it.unit_price), 0) || 0
                     )}
                   </div>
-                </div>
+                {/* Staff Order Status Controls */}
+                {canManageStatus && (
+                  <div
+                    style={{
+                      padding: '1rem',
+                      background: 'var(--color-bg-primary)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-md)',
+                      marginBottom: '1rem',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                        Manage Order Status
+                      </span>
+                      <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}>
+                        Current Status:{' '}
+                        <span className={getStatusBadgeClass(selectedOrder.status)} style={{ marginLeft: '0.35rem' }}>
+                          {selectedOrder.status}
+                        </span>
+                      </span>
+                    </div>
+
+                    {statusFeedback && (
+                      <div
+                        style={{
+                          padding: '0.5rem 0.75rem',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.8125rem',
+                          marginBottom: '0.75rem',
+                          background: statusFeedback.type === 'success' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                          color: statusFeedback.type === 'success' ? '#22c55e' : '#ef4444',
+                        }}
+                      >
+                        {statusFeedback.message}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      {(['Pending', 'Scheduled', 'Delivered', 'Cancelled'] as const).map((st) => (
+                        <button
+                          key={st}
+                          className={`btn btn-sm ${selectedOrder.status === st ? 'btn-primary' : 'btn-secondary'}`}
+                          disabled={isUpdatingStatus || selectedOrder.status === st}
+                          onClick={() => handleUpdateOrderStatus(st)}
+                          style={{ fontSize: '0.8125rem' }}
+                        >
+                          Mark {st}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : null}
 

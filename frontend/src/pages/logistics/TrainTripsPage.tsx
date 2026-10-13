@@ -187,7 +187,7 @@ export function TrainTripsPage() {
       <div className="card">
         {isLoading ? <div className="loading-container"><div className="spinner" /></div>
         : trips.length === 0 ? (
-          <div className="empty-state"><Train className="empty-state-icon" /><p className="empty-state-title">No train trips found</p><p>Train schedules will appear once database queries are implemented</p></div>
+          <div className="empty-state"><Train className="empty-state-icon" /><p className="empty-state-title">No train trips found</p><p>No freight train schedules found. Click "Schedule Train Trip" above to plan a departure.</p></div>
         ) : (
           <table className="data-table">
             <thead><tr><th>Date</th><th>From</th><th>To</th><th>Departure</th><th>Arrival</th><th>Capacity</th><th>Available</th></tr></thead>

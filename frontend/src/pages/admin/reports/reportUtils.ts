@@ -30,6 +30,13 @@ export function exportToCsv(filename: string, rows: Record<string, any>[]) {
   document.body.removeChild(link);
 }
 
+export function exportToPdf(reportName: string) {
+  const originalTitle = document.title;
+  document.title = `Kandypack_${reportName.replace(/\s+/g, '_')}_Report`;
+  window.print();
+  document.title = originalTitle;
+}
+
 // Chart theme configurations matching the dark UI
 export const chartTooltipStyle = {
   backgroundColor: '#1e293b',

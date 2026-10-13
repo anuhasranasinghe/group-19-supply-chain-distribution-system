@@ -8,6 +8,7 @@
 import { pool } from '../database/connection.js';
 import { NotFoundError, ValidationError } from '../utils/errors.js';
 import { ORDER_ADVANCE_DAYS } from '../config/constants.js';
+import { createNotification } from './notificationService.js';
 
 interface CreateOrderData {
   customer_id: string;
@@ -183,6 +184,18 @@ export async function createOrder(data: CreateOrderData) {
     }
 
     await client.query('COMMIT');
+
+    try {
+      await createNotification(
+        data.customer_id,
+        'Order Placed Successfully',
+        `Your order #${order.id.slice(0, 8)} has been placed for delivery on ${data.requested_delivery_date.split('T')[0]}. Current status: Pending.`,
+        'order_update'
+      );
+    } catch {
+      // Non-blocking notification
+    }
+
     return order;
   } catch (error) {
     await client.query('ROLLBACK');
@@ -204,5 +217,18 @@ export async function updateOrderStatus(orderId: string, status: string, changed
     throw new NotFoundError('Order');
   }
 
-  return result.rows[0];
+  const updatedOrder = result.rows[0];
+
+  try {
+    await createNotification(
+      updatedOrder.customer_id,
+      'Order Status Updated',
+      `Your order #${orderId.slice(0, 8)} status has changed to "${status}".`,
+      'order_update'
+    );
+  } catch {
+    // Non-blocking notification
+  }
+
+  return updatedOrder;
 }

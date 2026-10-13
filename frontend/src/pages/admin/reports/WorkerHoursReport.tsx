@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { reportApi } from '../../../api/client';
 import { formatCurrency } from '../../../lib/utils';
-import { exportToCsv, chartTooltipStyle } from './reportUtils';
+import { exportToCsv, exportToPdf, chartTooltipStyle } from './reportUtils';
 import {
   Users,
   Clock,
   Briefcase,
   DollarSign,
   Download,
+  Printer,
   RotateCw,
   Calendar,
   CheckCircle2,
@@ -152,11 +153,18 @@ export function WorkerHoursReport() {
             <RotateCw size={14} className={isLoading ? 'animate-spin' : ''} /> Refresh
           </button>
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-secondary btn-sm"
             onClick={handleExport}
             disabled={filteredData.length === 0}
           >
             <Download size={14} /> Export CSV
+          </button>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => exportToPdf('Worker_Hours')}
+            disabled={filteredData.length === 0}
+          >
+            <Printer size={14} /> Export PDF
           </button>
         </div>
       </div>

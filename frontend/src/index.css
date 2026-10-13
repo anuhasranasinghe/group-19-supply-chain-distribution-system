@@ -858,3 +858,41 @@ a:hover {
   margin-bottom: 0;
 }
 
+@media print {
+  .sidebar,
+  .topbar,
+  .reports-nav,
+  .filter-toolbar,
+  .btn,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .main-content,
+  .app-layout {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .card,
+  .chart-card,
+  .table-container {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+  }
+
+  .data-table th,
+  .data-table td {
+    color: #000000 !important;
+    border-color: #e5e7eb !important;
+  }
+}
+

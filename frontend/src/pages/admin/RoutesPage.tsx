@@ -132,7 +132,7 @@ export function RoutesPage() {
       <div className="card">
         {isLoading ? <div className="loading-container"><div className="spinner" /></div>
         : routes.length === 0 ? (
-          <div className="empty-state"><MapPin className="empty-state-icon" /><p className="empty-state-title">No routes found</p><p>Routes will appear once database queries are implemented</p></div>
+          <div className="empty-state"><MapPin className="empty-state-icon" /><p className="empty-state-title">No routes found</p><p>No delivery routes registered yet. Click "Add Route" above to map a new area to a store.</p></div>
         ) : (
           <table className="data-table">
             <thead><tr><th>Area Name</th><th>Store</th><th>City</th><th>Max Delivery Time</th></tr></thead>

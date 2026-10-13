@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { reportApi } from '../../../api/client';
 import { formatCurrency, formatDate, getStatusBadgeClass } from '../../../lib/utils';
-import { exportToCsv } from './reportUtils';
+import { exportToCsv, exportToPdf } from './reportUtils';
 import {
   ShoppingCart,
   Search,
   Download,
+  Printer,
   RotateCw,
   ChevronDown,
   ChevronUp,
@@ -272,11 +273,18 @@ export function CustomerOrdersReport() {
             <RotateCw size={14} className={isLoading ? 'animate-spin' : ''} /> Refresh
           </button>
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-secondary btn-sm"
             onClick={handleExport}
             disabled={filteredFlatRows.length === 0}
           >
             <Download size={14} /> Export CSV
+          </button>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => exportToPdf('Customer_Order_History')}
+            disabled={filteredFlatRows.length === 0}
+          >
+            <Printer size={14} /> Export PDF
           </button>
         </div>
       </div>

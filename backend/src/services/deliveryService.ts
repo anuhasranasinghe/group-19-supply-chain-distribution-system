@@ -1,6 +1,7 @@
 import { pool } from '../database/connection.js';
 import { NotFoundError, ValidationError } from '../utils/errors.js';
 import type { DeliveryStatus, SystemRole } from '../types/index.js';
+import { createNotification } from './notificationService.js';
 
 const VALID_TRANSITIONS: Record<DeliveryStatus, readonly DeliveryStatus[]> = {
   Pending: ['Scheduled'],
@@ -156,6 +157,29 @@ export async function updateDeliveryStatus(
     );
 
     await client.query('COMMIT');
+
+    try {
+      const custRes = await pool.query(
+        `SELECT o.customer_id, o.id AS order_id, p.name AS product_name 
+         FROM delivery_items di
+         JOIN order_items oi ON oi.id = di.order_item_id
+         JOIN orders o ON o.id = oi.order_id
+         JOIN products p ON p.id = oi.product_id
+         WHERE di.id = $1`,
+        [deliveryItemId]
+      );
+      if (custRes.rows.length > 0) {
+        const item = custRes.rows[0];
+        await createNotification(
+          item.customer_id,
+          'Delivery Status Updated',
+          `Your item "${item.product_name}" from order #${item.order_id.slice(0, 8)} is now marked as "${newStatus}".`,
+          'delivery_update'
+        );
+      }
+    } catch {
+      // Non-blocking notification
+    }
 
     return updatedResult.rows[0];
   } catch (error) {
