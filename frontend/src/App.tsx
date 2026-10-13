@@ -14,6 +14,7 @@ import { AppLayout } from './components/layout/AppLayout';
 // Auth Pages
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { LandingPage } from './pages/LandingPage';
 
 // Main Pages
 import { DashboardPage } from './pages/DashboardPage';
@@ -43,6 +44,7 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* Public Routes — No Authentication Required */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
@@ -105,9 +107,8 @@ function App() {
             } />
           </Route>
 
-          {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          {/* Default fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
