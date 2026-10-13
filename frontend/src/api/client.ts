@@ -116,6 +116,8 @@ export const trainTripApi = {
 export const trainAllocationApi = {
   getAll: (page = 1, limit = 20) =>
     api.get(`/train-allocations?page=${page}&limit=${limit}`),
+  getPendingItems: () =>
+    api.get('/train-allocations/pending-items'),
   create: (data: Record<string, unknown>) => api.post('/train-allocations', data),
 };
 

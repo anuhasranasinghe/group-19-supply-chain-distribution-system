@@ -92,3 +92,37 @@ export async function createAllocation(data: {
     client.release();
   }
 }
+
+// Get order items that still need train space allocation
+export async function getPendingOrderItems() {
+  const result = await pool.query(
+    `SELECT 
+       oi.id AS order_item_id,
+       oi.order_id,
+       oi.product_id,
+       p.name AS product_name,
+       p.unit_space_consumption,
+       oi.quantity AS total_quantity,
+       COALESCE(SUM(ota.quantity_allocated), 0) AS allocated_quantity,
+       (oi.quantity - COALESCE(SUM(ota.quantity_allocated), 0)) AS unallocated_quantity,
+       ((oi.quantity - COALESCE(SUM(ota.quantity_allocated), 0)) * p.unit_space_consumption)::numeric AS unallocated_space,
+       s.city AS destination_city,
+       s.name AS destination_store_name,
+       o.requested_delivery_date,
+       o.status AS order_status,
+       u.name AS customer_name
+     FROM order_items oi
+     JOIN products p ON oi.product_id = p.id
+     JOIN orders o ON oi.order_id = o.id
+     JOIN routes r ON o.route_id = r.id
+     JOIN stores s ON r.store_id = s.id
+     JOIN customers c ON o.customer_id = c.id
+     JOIN users u ON c.id = u.id
+     LEFT JOIN order_train_allocations ota ON oi.id = ota.order_item_id
+     WHERE o.status = 'Pending'
+     GROUP BY oi.id, oi.order_id, oi.product_id, p.name, p.unit_space_consumption, oi.quantity, s.city, s.name, o.requested_delivery_date, o.status, u.name
+     HAVING (oi.quantity - COALESCE(SUM(ota.quantity_allocated), 0)) > 0
+     ORDER BY o.requested_delivery_date ASC`
+  );
+  return result.rows;
+}

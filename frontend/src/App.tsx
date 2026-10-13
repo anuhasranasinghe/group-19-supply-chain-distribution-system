@@ -69,7 +69,7 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/allocations" element={
-              <ProtectedRoute allowedRoles={['dispatcher']}>
+              <ProtectedRoute allowedRoles={['admin', 'dispatcher']}>
                 <AllocationsPage />
               </ProtectedRoute>
             } />

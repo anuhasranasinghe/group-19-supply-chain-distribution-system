@@ -8,7 +8,8 @@ import { createTrainAllocationSchema, paginationQuery } from '../validators/sche
 
 const router = Router();
 
-router.get('/', authenticate, authorize('dispatcher'), validate(paginationQuery, 'query'), trainAllocationController.getAll);
-router.post('/', authenticate, authorize('dispatcher'), validate(createTrainAllocationSchema), trainAllocationController.create);
+router.get('/', authenticate, authorize('admin', 'dispatcher'), validate(paginationQuery, 'query'), trainAllocationController.getAll);
+router.get('/pending-items', authenticate, authorize('admin', 'dispatcher'), trainAllocationController.getPendingItems);
+router.post('/', authenticate, authorize('admin', 'dispatcher'), validate(createTrainAllocationSchema), trainAllocationController.create);
 
 export default router;

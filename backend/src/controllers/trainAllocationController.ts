@@ -17,3 +17,10 @@ export async function create(req: AuthenticatedRequest, res: Response, next: Nex
     res.status(201).json({ success: true, data: { allocation }, message: 'Order item allocated to train' });
   } catch (error) { next(error); }
 }
+
+export async function getPendingItems(_req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    const items = await trainAllocationService.getPendingOrderItems();
+    res.json({ success: true, data: { items } });
+  } catch (error) { next(error); }
+}

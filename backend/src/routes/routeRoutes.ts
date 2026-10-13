@@ -8,8 +8,8 @@ import { createRouteSchema, updateRouteSchema, uuidParam, paginationQuery } from
 
 const router = Router();
 
-router.get('/', authenticate, authorize('admin', 'dispatcher', 'store_manager'), validate(paginationQuery, 'query'), routeController.getAll);
-router.get('/:id', authenticate, authorize('admin', 'dispatcher', 'store_manager'), validate(uuidParam, 'params'), routeController.getById);
+router.get('/', authenticate, authorize('admin', 'dispatcher', 'store_manager', 'customer'), validate(paginationQuery, 'query'), routeController.getAll);
+router.get('/:id', authenticate, authorize('admin', 'dispatcher', 'store_manager', 'customer'), validate(uuidParam, 'params'), routeController.getById);
 router.post('/', authenticate, authorize('admin'), validate(createRouteSchema), routeController.create);
 router.put('/:id', authenticate, authorize('admin'), validate(uuidParam, 'params'), routeController.update);
 

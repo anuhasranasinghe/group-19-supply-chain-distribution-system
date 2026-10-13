@@ -533,11 +533,11 @@ cp .env.example .env
 
 4. **Default Seed Credentials:**
    - **Admin**: `username: admin` | `password: password123`
-   - **Dispatcher**: `username: dispatcher1` | `password: password123`
-   - **Store Manager**: `username: manager_colombo` | `password: password123`
-   - **Driver**: `username: driver1` | `password: password123`
-   - **Assistant**: `username: asst1` | `password: password123`
-   - **Customer**: `username: customer1` | `password: password123`
+   - **Dispatcher**: `username: dispatcher` | `password: password123`
+   - **Store Manager**: `username: mgr_colombo` | `password: password123`
+   - **Driver**: `username: driver_1` | `password: password123`
+   - **Assistant**: `username: ast_1` | `password: password123`
+   - **Customer**: `username: cust_col1` | `password: password123`
 
 ---
 

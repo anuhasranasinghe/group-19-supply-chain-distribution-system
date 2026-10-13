@@ -10,7 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getInitials } from '../../lib/utils';
 import {
   LayoutDashboard, Package, MapPin, ShoppingCart, Train, Truck,
-  Users, BarChart3, Store, Route, ClipboardList, Bell, LogOut,
+  Users, BarChart3, Store, Route, Bell, LogOut,
   PackageCheck
 } from 'lucide-react';
 import type { SystemRole } from '../../types';
@@ -38,14 +38,13 @@ const navSections: NavSection[] = [
     title: 'Orders',
     items: [
       { label: 'Orders', path: '/orders', icon: <ShoppingCart />, roles: ['admin', 'dispatcher', 'store_manager', 'customer'] },
-      { label: 'Place Order', path: '/orders/new', icon: <ClipboardList />, roles: ['customer'] },
     ],
   },
   {
     title: 'Logistics',
     items: [
       { label: 'Train Trips', path: '/train-trips', icon: <Train />, roles: ['admin', 'dispatcher'] },
-      { label: 'Allocations', path: '/allocations', icon: <PackageCheck />, roles: ['dispatcher'] },
+      { label: 'Allocations', path: '/allocations', icon: <PackageCheck />, roles: ['admin', 'dispatcher'] },
       { label: 'Trucks', path: '/trucks', icon: <Truck />, roles: ['admin', 'dispatcher'] },
       { label: 'Truck Trips', path: '/truck-trips', icon: <Route />, roles: ['admin', 'dispatcher', 'store_manager', 'driver', 'assistant'] },
       { label: 'Deliveries', path: '/deliveries', icon: <PackageCheck />, roles: ['admin', 'dispatcher', 'store_manager', 'driver', 'assistant', 'customer'] },

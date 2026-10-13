@@ -9,13 +9,13 @@ import { createUserSchema, updateUserSchema, uuidParam, paginationQuery } from '
 
 const router = Router();
 
-// All user management routes require admin role
-router.use(authenticate, authorize('admin'));
+// Reading users is accessible to staff who need to view crew/workers (admin, dispatcher, store_manager)
+router.get('/', authenticate, authorize('admin', 'dispatcher', 'store_manager'), validate(paginationQuery, 'query'), userController.getAll);
+router.get('/:id', authenticate, authorize('admin', 'dispatcher', 'store_manager'), validate(uuidParam, 'params'), userController.getById);
 
-router.get('/', validate(paginationQuery, 'query'), userController.getAll);
-router.get('/:id', validate(uuidParam, 'params'), userController.getById);
-router.post('/', validate(createUserSchema), userController.create);
-router.put('/:id', validate(uuidParam, 'params'), userController.update);
-router.delete('/:id', validate(uuidParam, 'params'), userController.remove);
+// Modifying users requires admin role
+router.post('/', authenticate, authorize('admin'), validate(createUserSchema), userController.create);
+router.put('/:id', authenticate, authorize('admin'), validate(uuidParam, 'params'), userController.update);
+router.delete('/:id', authenticate, authorize('admin'), validate(uuidParam, 'params'), userController.remove);
 
 export default router;

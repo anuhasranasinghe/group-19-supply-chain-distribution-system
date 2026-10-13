@@ -136,11 +136,18 @@ export async function getOrderById(orderId: string, userId: string, userRole: st
 
 // Place a new order with atomic transaction
 export async function createOrder(data: CreateOrderData) {
-  const requestedDate = new Date(data.requested_delivery_date);
+  // Compare calendar days to avoid hour/minute mismatches
+  const reqDateStr = data.requested_delivery_date.split('T')[0];
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + ORDER_ADVANCE_DAYS);
+  const minDateStrUTC = minDate.toISOString().split('T')[0];
+  const year = minDate.getFullYear();
+  const month = String(minDate.getMonth() + 1).padStart(2, '0');
+  const day = String(minDate.getDate()).padStart(2, '0');
+  const minDateStrLocal = `${year}-${month}-${day}`;
+  const minDateStr = minDateStrUTC < minDateStrLocal ? minDateStrUTC : minDateStrLocal;
 
-  if (requestedDate < minDate) {
+  if (reqDateStr < minDateStr) {
     throw new ValidationError(
       `Orders must be placed at least ${ORDER_ADVANCE_DAYS} days before requested delivery date.`
     );

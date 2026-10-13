@@ -14,8 +14,12 @@ import { SYSTEM_ROLES, WORKER_TYPES, DELIVERY_STATUSES } from '../config/constan
 // Common / Reusable Schemas
 // ----------------------------------------------------------
 
+// Standard PostgreSQL UUID regex accepting both v4 and seed UUID formats
+const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+export const uuidSchema = z.string().regex(UUID_REGEX, 'Invalid UUID format');
+
 export const uuidParam = z.object({
-  id: z.string().uuid('Invalid ID format — expected a UUID'),
+  id: uuidSchema,
 });
 
 export const paginationQuery = z.object({
@@ -89,14 +93,14 @@ export const createStoreSchema = z.object({
   name: z.string().min(1).max(255),
   city: z.string().min(1).max(100),
   location: z.string().optional(),
-  managed_by: z.string().uuid().optional(),
+  managed_by: uuidSchema.optional(),
 });
 
 export const updateStoreSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   city: z.string().min(1).max(100).optional(),
   location: z.string().optional(),
-  managed_by: z.string().uuid().nullable().optional(),
+  managed_by: uuidSchema.nullable().optional(),
 });
 
 // ----------------------------------------------------------
@@ -104,13 +108,13 @@ export const updateStoreSchema = z.object({
 // ----------------------------------------------------------
 
 export const createRouteSchema = z.object({
-  store_id: z.string().uuid(),
+  store_id: uuidSchema,
   max_delivery_time: z.string().optional(), // PostgreSQL interval as string
   area_name: z.string().min(1).max(255),
 });
 
 export const updateRouteSchema = z.object({
-  store_id: z.string().uuid().optional(),
+  store_id: uuidSchema.optional(),
   max_delivery_time: z.string().optional(),
   area_name: z.string().min(1).max(255).optional(),
 });
@@ -125,9 +129,9 @@ export const createOrderSchema = z.object({
     (val) => !isNaN(Date.parse(val)),
     'Invalid date format'
   ),
-  route_id: z.string().uuid('Route is required'),
+  route_id: uuidSchema,
   items: z.array(z.object({
-    product_id: z.string().uuid(),
+    product_id: uuidSchema,
     quantity: z.number().int().positive('Quantity must be a positive integer'),
   })).min(1, 'Order must contain at least one item'),
 });
@@ -142,7 +146,7 @@ export const updateOrderStatusSchema = z.object({
 
 export const createTrainTripSchema = z.object({
   to_city: z.string().min(1).max(100),
-  destination_store_id: z.string().uuid().optional(),
+  destination_store_id: uuidSchema.optional(),
   trip_date: z.string().refine((val) => !isNaN(Date.parse(val)), 'Invalid date'),
   departure_time: z.string().refine((val) => !isNaN(Date.parse(val)), 'Invalid datetime'),
   arrival_time: z.string().refine((val) => !isNaN(Date.parse(val)), 'Invalid datetime'),
@@ -151,7 +155,7 @@ export const createTrainTripSchema = z.object({
 
 export const updateTrainTripSchema = z.object({
   to_city: z.string().min(1).max(100).optional(),
-  destination_store_id: z.string().uuid().optional(),
+  destination_store_id: uuidSchema.optional(),
   trip_date: z.string().optional(),
   departure_time: z.string().optional(),
   arrival_time: z.string().optional(),
@@ -163,8 +167,8 @@ export const updateTrainTripSchema = z.object({
 // ----------------------------------------------------------
 
 export const createTrainAllocationSchema = z.object({
-  order_item_id: z.string().uuid(),
-  train_trip_id: z.string().uuid(),
+  order_item_id: uuidSchema,
+  train_trip_id: uuidSchema,
   quantity_allocated: z.number().int().positive().optional(), // If omitted, allocate all
 });
 
@@ -187,10 +191,10 @@ export const updateTruckSchema = z.object({
 // ----------------------------------------------------------
 
 export const createTruckTripSchema = z.object({
-  truck_id: z.string().uuid(),
-  driver_id: z.string().uuid(),
-  assistant_id: z.string().uuid(),
-  route_id: z.string().uuid(),
+  truck_id: uuidSchema,
+  driver_id: uuidSchema,
+  assistant_id: uuidSchema,
+  route_id: uuidSchema,
   start_time: z.string().refine((val) => !isNaN(Date.parse(val)), 'Invalid datetime'),
   end_time: z.string().refine((val) => !isNaN(Date.parse(val)), 'Invalid datetime').optional(),
 });

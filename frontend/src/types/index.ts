@@ -124,6 +124,13 @@ export interface DeliveryItem {
   delivery_status: DeliveryStatus;
   delivered_at: string | null;
   product_name?: string;
+  order_id?: string;
+  customer_name?: string;
+  delivery_address?: string;
+  vehicle_no?: string;
+  route_area?: string;
+  store_name?: string;
+  truck_trip_status?: string;
 }
 
 export interface Notification {
@@ -150,6 +157,43 @@ export interface ApiError {
     message: string;
     details?: Array<{ field: string; message: string }>;
   };
+}
+
+export interface TrainAllocation {
+  id: string;
+  order_item_id: string;
+  train_trip_id: string;
+  quantity_allocated: number;
+  allocated_space: string | number;
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  unit_space_consumption: string | number;
+  from_city: string;
+  to_city: string;
+  trip_date: string;
+  departure_time: string;
+  arrival_time: string;
+  customer_id: string;
+  order_status: string;
+  requested_delivery_date: string;
+}
+
+export interface PendingOrderItem {
+  order_item_id: string;
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  unit_space_consumption: string | number;
+  total_quantity: number;
+  allocated_quantity: number;
+  unallocated_quantity: number;
+  unallocated_space: string | number;
+  destination_city: string;
+  destination_store_name: string;
+  requested_delivery_date: string;
+  order_status: string;
+  customer_name: string;
 }
 
 export interface PaginatedData<T> {

@@ -8,8 +8,8 @@ import { createTruckSchema, updateTruckSchema, uuidParam, paginationQuery } from
 
 const router = Router();
 
-router.get('/', authenticate, authorize('admin', 'dispatcher'), validate(paginationQuery, 'query'), truckController.getAll);
-router.get('/:id', authenticate, authorize('admin', 'dispatcher'), validate(uuidParam, 'params'), truckController.getById);
+router.get('/', authenticate, authorize('admin', 'dispatcher', 'store_manager'), validate(paginationQuery, 'query'), truckController.getAll);
+router.get('/:id', authenticate, authorize('admin', 'dispatcher', 'store_manager'), validate(uuidParam, 'params'), truckController.getById);
 router.post('/', authenticate, authorize('admin'), validate(createTruckSchema), truckController.create);
 router.put('/:id', authenticate, authorize('admin'), validate(uuidParam, 'params'), truckController.update);
 

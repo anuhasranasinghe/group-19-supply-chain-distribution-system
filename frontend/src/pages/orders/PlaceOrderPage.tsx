@@ -20,17 +20,35 @@ export function PlaceOrderPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [prodRes, routeRes] = await Promise.all([productApi.getAll(1, 100), routeApi.getAll(1, 100)]);
-        setProducts(prodRes.data.data.products || []);
-        setRoutes(routeRes.data.data.routes || []);
-      } catch { /* data will load once SQL is implemented */ }
+        const [prodRes, routeRes] = await Promise.allSettled([
+          productApi.getAll(1, 100),
+          routeApi.getAll(1, 100),
+        ]);
+
+        if (prodRes.status === 'fulfilled') {
+          setProducts(prodRes.value.data?.data?.products || []);
+        } else {
+          setError(prev => (prev ? `${prev} | ` : '') + 'Failed to load products');
+        }
+
+        if (routeRes.status === 'fulfilled') {
+          setRoutes(routeRes.value.data?.data?.routes || []);
+        } else {
+          setError(prev => (prev ? `${prev} | ` : '') + 'Failed to load delivery routes');
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to load order resources');
+      }
     })();
   }, []);
 
-  // Calculate minimum delivery date (today + 7 days)
+  // Calculate minimum delivery date (today + 7 days) in local time
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + 7);
-  const minDateStr = minDate.toISOString().split('T')[0];
+  const minYear = minDate.getFullYear();
+  const minMonth = String(minDate.getMonth() + 1).padStart(2, '0');
+  const minDay = String(minDate.getDate()).padStart(2, '0');
+  const minDateStr = `${minYear}-${minMonth}-${minDay}`;
 
   const addItem = () => setItems(prev => [...prev, { product_id: '', quantity: 1 }]);
   const removeItem = (idx: number) => setItems(prev => prev.filter((_, i) => i !== idx));
@@ -41,17 +59,29 @@ export function PlaceOrderPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const validItems = items.filter(i => i.product_id && i.quantity > 0);
+    if (validItems.length === 0) {
+      setError('Please select at least one product with a valid quantity.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await orderApi.create({
         delivery_address: address,
         requested_delivery_date: deliveryDate,
         route_id: routeId,
-        items: items.filter(i => i.product_id && i.quantity > 0),
+        items: validItems,
       });
       navigate('/orders');
     } catch (err: any) {
-      setError(err.message || 'Failed to place order');
+      if (err.details && Array.isArray(err.details) && err.details.length > 0) {
+        const detailMsgs = err.details.map((d: any) => d.message || d.field).join(', ');
+        setError(`${err.message}: ${detailMsgs}`);
+      } else {
+        setError(err.message || 'Failed to place order');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -85,7 +115,7 @@ export function PlaceOrderPage() {
               </div>
               <div className="form-group" style={{ margin: 0 }}>
                 <label className="form-label">Qty</label>
-                <input className="form-input" type="number" min="1" value={item.quantity} onChange={e => updateItem(idx, 'quantity', parseInt(e.target.value))} required />
+                <input className="form-input" type="number" min="1" value={item.quantity} onChange={e => updateItem(idx, 'quantity', parseInt(e.target.value) || 1)} required />
               </div>
               {items.length > 1 && (
                 <button type="button" className="btn btn-ghost btn-icon" onClick={() => removeItem(idx)} style={{ color: 'var(--color-danger)' }}><Trash2 size={16} /></button>

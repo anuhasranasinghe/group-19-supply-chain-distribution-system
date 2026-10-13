@@ -44,15 +44,15 @@ export function TruckTripsPage() {
     setShowForm(true);
     setError('');
     try {
-      const [tRes, rRes, uRes] = await Promise.all([
+      const [tRes, rRes, uRes] = await Promise.allSettled([
         truckApi.getAll(1, 100),
         routeApi.getAll(1, 100),
         userApi.getAll(1, 100),
       ]);
 
-      const truckList = tRes.data.data.trucks || [];
-      const routeList = rRes.data.data.routes || [];
-      const userList: User[] = uRes.data.data.users || [];
+      const truckList = tRes.status === 'fulfilled' ? (tRes.value.data.data.trucks || []) : [];
+      const routeList = rRes.status === 'fulfilled' ? (rRes.value.data.data.routes || []) : [];
+      const userList: User[] = uRes.status === 'fulfilled' ? (uRes.value.data.data.users || []) : [];
 
       const driverList = userList.filter(u => u.system_role === 'driver');
       const assistantList = userList.filter(u => u.system_role === 'assistant');
@@ -61,6 +61,14 @@ export function TruckTripsPage() {
       setRoutes(routeList);
       setDrivers(driverList);
       setAssistants(assistantList);
+
+      const failures: string[] = [];
+      if (tRes.status === 'rejected') failures.push('trucks');
+      if (rRes.status === 'rejected') failures.push('routes');
+      if (uRes.status === 'rejected') failures.push('staff/crew');
+      if (failures.length > 0) {
+        setError(`Failed to load some resources: ${failures.join(', ')}`);
+      }
 
       setFormData(prev => ({
         ...prev,
@@ -210,7 +218,7 @@ export function TruckTripsPage() {
       <div className="card">
         {isLoading ? <div className="loading-container"><div className="spinner" /></div>
         : trips.length === 0 ? (
-          <div className="empty-state"><Route className="empty-state-icon" /><p className="empty-state-title">No truck trips found</p><p>Truck trip schedules will appear once queries are implemented</p></div>
+          <div className="empty-state"><Route className="empty-state-icon" /><p className="empty-state-title">No truck trips found</p><p>No truck trips have been scheduled yet. Click "Schedule Trip" above to create one.</p></div>
         ) : (
           <table className="data-table">
             <thead><tr><th>Vehicle</th><th>Driver</th><th>Assistant</th><th>Route</th><th>Start</th><th>Status</th></tr></thead>
