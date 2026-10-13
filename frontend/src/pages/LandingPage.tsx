@@ -208,22 +208,22 @@ export function LandingPage() {
         <div className="landing-nav-container">
           <Link to="/" className="landing-brand">
             <div className="brand-icon-box">
-              <Train size={20} />
+              <Train size={18} />
             </div>
-            <div className="brand-text">
-              <h1>Kandypack SCDS</h1>
-              <span className="brand-badge">Sri Lanka Multimodal Logistics</span>
+            <div className="brand-title-wrap">
+              <span className="brand-title">Kandypack SCDS</span>
+              <span className="brand-tag">Multimodal</span>
             </div>
           </Link>
 
           <nav>
             <ul className="landing-nav-links">
-              <li><a href="#network" className="landing-nav-link">Network Corridor</a></li>
-              <li><a href="#pipeline" className="landing-nav-link">Multimodal Flow</a></li>
-              <li><a href="#simulator" className="landing-nav-link">Capacity Simulator</a></li>
-              <li><a href="#roster" className="landing-nav-link">Labor Compliance</a></li>
+              <li><a href="#network" className="landing-nav-link">Network</a></li>
+              <li><a href="#pipeline" className="landing-nav-link">Operations</a></li>
+              <li><a href="#simulator" className="landing-nav-link">Simulator</a></li>
+              <li><a href="#roster" className="landing-nav-link">Labor Rules</a></li>
               <li><a href="#roles" className="landing-nav-link">Portals</a></li>
-              <li><a href="#reports" className="landing-nav-link">Analytics</a></li>
+              <li><a href="#reports" className="landing-nav-link">Reports</a></li>
             </ul>
           </nav>
 
@@ -238,27 +238,24 @@ export function LandingPage() {
                 </div>
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="btn-hero-primary"
-                  style={{ padding: '0.45rem 1.1rem', fontSize: '0.85rem' }}
+                  className="btn-nav-primary"
                 >
-                  Console Dashboard <ArrowRight size={15} />
+                  Dashboard <ArrowRight size={14} />
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <Link
                   to="/login"
-                  className="btn-hero-secondary"
-                  style={{ padding: '0.45rem 1rem', fontSize: '0.85rem' }}
+                  className="btn-nav-secondary"
                 >
-                  <LogIn size={15} /> Sign In
+                  <LogIn size={14} /> Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="btn-hero-primary"
-                  style={{ padding: '0.45rem 1.1rem', fontSize: '0.85rem' }}
+                  className="btn-nav-primary"
                 >
-                  Register Customer <ChevronRight size={15} />
+                  Register <ChevronRight size={14} />
                 </Link>
               </div>
             )}
@@ -279,12 +276,6 @@ export function LandingPage() {
           <h1 className="hero-title">
             Unified Supply Chain & <span className="hero-gradient-text">Multimodal Freight Orchestration</span>
           </h1>
-
-          <p className="hero-subtitle">
-            Synchronizing bulk railway cargo from Kandy Central to Sri Lanka's economic hubs via 
-            Sri Lanka Railways, integrated with automated last-mile fleet routing, strict labor fatigue 
-            rosters, and executive analytics.
-          </p>
 
           <div className="hero-actions">
             {isAuthenticated ? (
@@ -360,10 +351,10 @@ export function LandingPage() {
             <div className="corridor-sidebar">
               <div className="corridor-origin-badge">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                  <Warehouse size={16} color="#818cf8" />
-                  <strong style={{ fontSize: '0.9rem', color: '#ffffff' }}>Central Origin Hub</strong>
+                  <Warehouse size={16} color="#4f46e5" />
+                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>Central Origin Hub</strong>
                 </div>
-                <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
                   Kandy Central Distribution Yard • Goods Shed Depot
                 </div>
               </div>
@@ -383,7 +374,7 @@ export function LandingPage() {
                     <div className="corridor-city-meta">{corridor.province}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#818cf8' }}>
+                    <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#4f46e5' }}>
                       {corridor.railDistanceKm} km
                     </div>
                     <div style={{ fontSize: '0.7rem', color: '#64748b' }}>{corridor.transitTime}</div>
@@ -398,20 +389,20 @@ export function LandingPage() {
                 <div className="detail-header">
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#ffffff' }}>
+                      <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0f172a' }}>
                         {activeCity.name} Hub Terminal
                       </h3>
                       <span className="badge badge-in-progress" style={{ fontSize: '0.75rem' }}>
                         {activeCity.province}
                       </span>
                     </div>
-                    <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                    <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
                       {activeCity.highlight}
                     </p>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Railway Line Code</span>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#38bdf8' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0284c7' }}>
                       SLR-KDY-{activeCity.name.substring(0, 3).toUpperCase()}
                     </div>
                   </div>
@@ -421,40 +412,40 @@ export function LandingPage() {
                 <div className="detail-grid">
                   <div className="detail-box">
                     <div className="detail-box-label">Inter-City Rail Transit</div>
-                    <div className="detail-box-value" style={{ color: '#818cf8', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <div className="detail-box-value" style={{ color: '#4f46e5', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                       <Train size={18} /> {activeCity.transitTime}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
                       {activeCity.railDistanceKm} km rail corridor
                     </div>
                   </div>
 
                   <div className="detail-box">
                     <div className="detail-box-label">Railway Depot Store</div>
-                    <div className="detail-box-value" style={{ color: '#22c55e', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem' }}>
+                    <div className="detail-box-value" style={{ color: '#16a34a', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem' }}>
                       <Warehouse size={18} /> Station Yard
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
                       {activeCity.stationLocation}
                     </div>
                   </div>
 
                   <div className="detail-box">
                     <div className="detail-box-label">Dedicated Delivery Fleet</div>
-                    <div className="detail-box-value" style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <div className="detail-box-value" style={{ color: '#d97706', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                       <Truck size={18} /> {activeCity.activeTrucks} Trucks
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
                       Active rostered teams
                     </div>
                   </div>
                 </div>
 
                 {/* Connected Predefined Routes */}
-                <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <Layers size={15} color="#818cf8" /> Predefined Last-Mile Routes & Max Delivery Times
+                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Layers size={15} color="#4f46e5" /> Predefined Last-Mile Routes & Max Delivery Times
                     </div>
                     <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
                       {activeCity.routes.length} mapped areas
@@ -465,7 +456,7 @@ export function LandingPage() {
                     {activeCity.routes.map((route, idx) => (
                       <div key={idx} className="route-tag">
                         <strong>{route.name}</strong>
-                        <span style={{ marginLeft: '0.5rem', color: '#f59e0b', fontSize: '0.72rem' }}>
+                        <span style={{ marginLeft: '0.5rem', color: '#d97706', fontSize: '0.72rem', fontWeight: 600 }}>
                           (Max: {route.maxTime})
                         </span>
                       </div>
@@ -475,14 +466,14 @@ export function LandingPage() {
               </div>
 
               {/* Action bar inside detail */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
                   Orders to {activeCity.name} must be reserved at least <strong>7 days in advance</strong>.
                 </div>
                 <Link
                   to="/orders/new"
-                  className="btn btn-primary"
-                  style={{ fontSize: '0.8125rem', padding: '0.4rem 0.9rem' }}
+                  className="btn-hero-primary"
+                  style={{ fontSize: '0.8125rem', padding: '0.45rem 1rem' }}
                 >
                   Schedule Dispatch to {activeCity.name} <ArrowRight size={14} />
                 </Link>
@@ -566,12 +557,12 @@ export function LandingPage() {
               <div style={{ flex: 1, paddingRight: '2rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Train size={18} color="#818cf8" />
-                    <span style={{ fontWeight: 600, fontSize: '0.95rem', color: '#ffffff' }}>
+                    <Train size={18} color="#4f46e5" />
+                    <span style={{ fontWeight: 600, fontSize: '0.95rem', color: '#0f172a' }}>
                       Intended Train Trip #1 Capacity Utilization
                     </span>
                   </div>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: totalSpaceRequired > trainCapacityLimit ? '#f59e0b' : '#22c55e' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: totalSpaceRequired > trainCapacityLimit ? '#d97706' : '#16a34a' }}>
                     {totalSpaceRequired} / {trainCapacityLimit} Space Units ({trip1Percent}%)
                   </span>
                 </div>
@@ -586,22 +577,22 @@ export function LandingPage() {
 
                 <div style={{ marginTop: '1rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
                   <div>
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Allocated to Trip #1</span>
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Allocated to Trip #1</span>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
                       {trip1Allocated} units ({Math.round(trip1Allocated / currentSimProduct.unitSpace)} items)
                     </div>
                   </div>
 
                   <div>
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Overflow for Trip #2</span>
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: overflowSpace > 0 ? '#ef4444' : '#22c55e' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Overflow for Trip #2</span>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: overflowSpace > 0 ? '#dc2626' : '#16a34a' }}>
                       {overflowSpace > 0 ? `${overflowSpace} units (${Math.round(overflowSpace / currentSimProduct.unitSpace)} items)` : '0 units (No Overflow)'}
                     </div>
                   </div>
 
                   <div>
-                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Advance Notice Status</span>
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: simAdvanceDays >= 7 ? '#22c55e' : '#ef4444' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Advance Notice Status</span>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: simAdvanceDays >= 7 ? '#16a34a' : '#dc2626' }}>
                       {simAdvanceDays >= 7 ? 'Approved (≥ 7 Days)' : 'Rejected (< 7 Days)'}
                     </div>
                   </div>
@@ -609,19 +600,19 @@ export function LandingPage() {
               </div>
 
               {/* Status pill summary */}
-              <div style={{ minWidth: '240px', background: 'rgba(30, 41, 59, 0.6)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 600 }}>
+              <div style={{ minWidth: '240px', background: '#ffffff', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', marginBottom: '0.5rem', fontWeight: 600 }}>
                   Scheduler Action
                 </div>
                 {overflowSpace > 0 ? (
-                  <div style={{ color: '#fbbf24', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                  <div style={{ color: '#d97706', fontSize: '0.85rem', lineHeight: '1.4' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, marginBottom: '0.25rem' }}>
                       <AlertCircle size={16} /> Split Trip Overflow
                     </div>
                     Automated rollover: {trip1Allocated} units loaded on scheduled departure; excess {overflowSpace} units queued on next train.
                   </div>
                 ) : (
-                  <div style={{ color: '#22c55e', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                  <div style={{ color: '#16a34a', fontSize: '0.85rem', lineHeight: '1.4' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, marginBottom: '0.25rem' }}>
                       <CheckCircle2 size={16} /> Full Allocation
                     </div>
@@ -719,28 +710,28 @@ export function LandingPage() {
                   <Users size={24} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.15rem', color: '#ffffff' }}>Truck Driver Protection Rules</h3>
-                  <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Primary Heavy Vehicle Operator</span>
+                  <h3 style={{ fontSize: '1.15rem', color: '#0f172a' }}>Truck Driver Protection Rules</h3>
+                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Primary Heavy Vehicle Operator</span>
                 </div>
               </div>
 
               <ul className="roster-list">
                 <li className="roster-item">
-                  <CheckCircle2 size={16} color="#22c55e" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div>
                     <strong>Zero Consecutive Deliveries:</strong> Drivers must not be scheduled for two 
                     consecutive truck deliveries. Mandatory rest interval between dispatches.
                   </div>
                 </li>
                 <li className="roster-item">
-                  <CheckCircle2 size={16} color="#22c55e" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div>
                     <strong>40-Hour Weekly Cap:</strong> Cumulative duty hours in any rolling 7-day cycle 
                     cannot exceed 40 hours. Overtime assignments are hard-blocked by database triggers.
                   </div>
                 </li>
                 <li className="roster-item">
-                  <CheckCircle2 size={16} color="#22c55e" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div>
                     <strong>Zero Double-Booking:</strong> The same driver cannot be assigned to overlapping 
                     route windows or concurrent delivery slots.
@@ -752,32 +743,32 @@ export function LandingPage() {
             {/* Assistant Rules */}
             <div className="roster-rule-card">
               <div className="roster-rule-header">
-                <div className="roster-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+                <div className="roster-icon" style={{ background: '#ecfdf5', color: '#059669' }}>
                   <Users size={24} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.15rem', color: '#ffffff' }}>Driver Assistant Protection Rules</h3>
-                  <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Cargo Handling & Co-Pilot Crew</span>
+                  <h3 style={{ fontSize: '1.15rem', color: '#0f172a' }}>Driver Assistant Protection Rules</h3>
+                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Cargo Handling & Co-Pilot Crew</span>
                 </div>
               </div>
 
               <ul className="roster-list">
                 <li className="roster-item">
-                  <CheckCircle2 size={16} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <CheckCircle2 size={16} color="#059669" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div>
                     <strong>Max 2 Consecutive Routes:</strong> Assistants can only be scheduled for a maximum 
                     of two consecutive routes before mandatory rest.
                   </div>
                 </li>
                 <li className="roster-item">
-                  <CheckCircle2 size={16} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <CheckCircle2 size={16} color="#059669" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div>
                     <strong>60-Hour Weekly Cap:</strong> Cumulative weekly logged hours capped at 60 hours 
                     to ensure alertness during loading and offloading.
                   </div>
                 </li>
                 <li className="roster-item">
-                  <CheckCircle2 size={16} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <CheckCircle2 size={16} color="#059669" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div>
                     <strong>Synchronous Co-Assignment:</strong> Assistants are locked to the vehicle schedule, 
                     preventing multi-truck conflict overlaps.
@@ -791,17 +782,17 @@ export function LandingPage() {
           <div className="roster-tester-card">
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                <Zap size={16} color="#818cf8" />
-                <strong style={{ color: '#ffffff', fontSize: '0.95rem' }}>Interactive Roster Simulator</strong>
+                <Zap size={16} color="#4f46e5" />
+                <strong style={{ color: '#0f172a', fontSize: '0.95rem' }}>Interactive Roster Simulator</strong>
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
                 Test how the database validation trigger evaluates crew assignment legality:
               </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               <div>
-                <label style={{ fontSize: '0.72rem', color: '#cbd5e1', display: 'block', marginBottom: '0.25rem' }}>
+                <label style={{ fontSize: '0.72rem', color: '#334155', display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>
                   Worker Role
                 </label>
                 <select
@@ -815,7 +806,7 @@ export function LandingPage() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.72rem', color: '#cbd5e1', display: 'block', marginBottom: '0.25rem' }}>
+                <label style={{ fontSize: '0.72rem', color: '#334155', display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>
                   Logged Weekly Hours
                 </label>
                 <input
@@ -830,7 +821,7 @@ export function LandingPage() {
               </div>
 
               <div>
-                <label style={{ fontSize: '0.72rem', color: '#cbd5e1', display: 'block', marginBottom: '0.25rem' }}>
+                <label style={{ fontSize: '0.72rem', color: '#334155', display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>
                   Consecutive Trips
                 </label>
                 <input
@@ -845,7 +836,7 @@ export function LandingPage() {
               </div>
 
               <div style={{ minWidth: '180px' }}>
-                <label style={{ fontSize: '0.72rem', color: '#cbd5e1', display: 'block', marginBottom: '0.25rem' }}>
+                <label style={{ fontSize: '0.72rem', color: '#334155', display: 'block', marginBottom: '0.25rem', fontWeight: 600 }}>
                   Validation Outcome
                 </label>
                 {isRosterCompliant ? (
@@ -909,106 +900,106 @@ export function LandingPage() {
             <div>
               {activeRoleTab === 'dispatcher' && (
                 <>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#818cf8', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#4f46e5', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
                     <Train size={16} /> Inter-City Rail & Fleet Command
                   </div>
-                  <h3 style={{ fontSize: '1.5rem', color: '#ffffff', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.5rem', color: '#0f172a', marginBottom: '0.75rem' }}>
                     Train Trips & Bulk Freight Allocator
                   </h3>
-                  <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+                  <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
                     Dispatchers monitor Sri Lanka Railways cargo trains departing Kandy, allocate wagon space 
                     based on real-time cubic requirements, resolve cargo overflows, and schedule connecting truck dispatches.
                   </p>
                   <ul className="roster-list" style={{ marginBottom: '1.5rem' }}>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#818cf8" /> Real-time train trip scheduling across all 6 corridors</li>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#818cf8" /> Automated space capacity allocation & overflow tracking</li>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#818cf8" /> Master truck fleet status & maintenance tracking</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#4f46e5" /> Real-time train trip scheduling across all 6 corridors</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#4f46e5" /> Automated space capacity allocation & overflow tracking</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#4f46e5" /> Master truck fleet status & maintenance tracking</li>
                   </ul>
-                  <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                    Demo Credentials: <code>dispatcher1</code> / <code>password123</code>
+                  <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#334155', border: '1px solid #e2e8f0' }}>
+                    Demo Credentials: <code style={{ color: '#4f46e5', fontWeight: 600 }}>dispatcher1</code> / <code>password123</code>
                   </div>
                 </>
               )}
 
               {activeRoleTab === 'store_manager' && (
                 <>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#10b981', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#059669', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
                     <Warehouse size={16} /> Regional Terminal Depot
                   </div>
-                  <h3 style={{ fontSize: '1.5rem', color: '#ffffff', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.5rem', color: '#0f172a', marginBottom: '0.75rem' }}>
                     Station Warehouses & Local Truck Rosters
                   </h3>
-                  <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+                  <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
                     Located right beside regional railway stations, store managers inspect incoming train shipments, 
                     manage local buffer inventory, and assign drivers and assistants to predefined delivery routes.
                   </p>
                   <ul className="roster-list" style={{ marginBottom: '1.5rem' }}>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#10b981" /> Station cargo arrival verification and line-item intake</li>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#10b981" /> Roster allocation with live collision & rest checking</li>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#10b981" /> Dispatch execution and delivery completion confirmations</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#059669" /> Station cargo arrival verification and line-item intake</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#059669" /> Roster allocation with live collision & rest checking</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#059669" /> Dispatch execution and delivery completion confirmations</li>
                   </ul>
-                  <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                    Demo Credentials: <code>colombo_mgr</code> / <code>password123</code>
+                  <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#334155', border: '1px solid #e2e8f0' }}>
+                    Demo Credentials: <code style={{ color: '#059669', fontWeight: 600 }}>colombo_mgr</code> / <code>password123</code>
                   </div>
                 </>
               )}
 
               {activeRoleTab === 'admin' && (
                 <>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#f59e0b', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#d97706', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
                     <ShieldCheck size={16} /> Governance & Enterprise Intel
                   </div>
-                  <h3 style={{ fontSize: '1.5rem', color: '#ffffff', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.5rem', color: '#0f172a', marginBottom: '0.75rem' }}>
                     Executive Operations & System Audits
                   </h3>
-                  <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+                  <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
                     Administrators configure regional stores, define delivery routes with maximum transit caps, 
                     provision workforce credentials, and analyze executive quarterly reporting.
                   </p>
                   <ul className="roster-list" style={{ marginBottom: '1.5rem' }}>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#f59e0b" /> Access to all 6 SRS Management Reports with CSV exports</li>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#f59e0b" /> Store management and route max-delivery-time configuration</li>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#f59e0b" /> System-wide user provisioning and role security access</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#d97706" /> Access to all 6 SRS Management Reports with CSV exports</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#d97706" /> Store management and route max-delivery-time configuration</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#d97706" /> System-wide user provisioning and role security access</li>
                   </ul>
-                  <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                    Demo Credentials: <code>admin</code> / <code>password123</code>
+                  <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#334155', border: '1px solid #e2e8f0' }}>
+                    Demo Credentials: <code style={{ color: '#d97706', fontWeight: 600 }}>admin</code> / <code>password123</code>
                   </div>
                 </>
               )}
 
               {activeRoleTab === 'customer' && (
                 <>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#38bdf8', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#0284c7', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
                     <Boxes size={16} /> B2B Ordering & Tracking
                   </div>
-                  <h3 style={{ fontSize: '1.5rem', color: '#ffffff', marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontSize: '1.5rem', color: '#0f172a', marginBottom: '0.75rem' }}>
                     Advance Cargo Booking & Live Tracking
                   </h3>
-                  <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+                  <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '1.25rem' }}>
                     Commercial clients book multi-line freight orders at least 7 days ahead, calculate volume 
                     estimates, review route schedules, and track dispatch stages until delivery confirmation.
                   </p>
                   <ul className="roster-list" style={{ marginBottom: '1.5rem' }}>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#38bdf8" /> 7-day advance booking with auto space calculation</li>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#38bdf8" /> Transparent order status tracking (Pending $\to$ Delivered)</li>
-                    <li className="roster-item"><CheckCircle2 size={16} color="#38bdf8" /> Historical order ledger and delivery receipts</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#0284c7" /> 7-day advance booking with auto space calculation</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#0284c7" /> Transparent order status tracking (Pending $\to$ Delivered)</li>
+                    <li className="roster-item"><CheckCircle2 size={16} color="#0284c7" /> Historical order ledger and delivery receipts</li>
                   </ul>
-                  <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                    Demo Credentials: <code>sunil_perera</code> / <code>password123</code>
+                  <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#334155', border: '1px solid #e2e8f0' }}>
+                    Demo Credentials: <code style={{ color: '#0284c7', fontWeight: 600 }}>sunil_perera</code> / <code>password123</code>
                   </div>
                 </>
               )}
             </div>
 
             {/* Interactive Preview Action Card */}
-            <div style={{ background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 'var(--radius-lg)', padding: '2rem', textAlign: 'center' }}>
-              <div style={{ width: '3.5rem', height: '3.5rem', borderRadius: '50%', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 'var(--radius-lg)', padding: '2rem', textAlign: 'center' }}>
+              <div style={{ width: '3.5rem', height: '3.5rem', borderRadius: '50%', background: '#eef2ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
                 <Sparkles size={28} />
               </div>
-              <h4 style={{ fontSize: '1.15rem', color: '#ffffff', marginBottom: '0.5rem' }}>
+              <h4 style={{ fontSize: '1.15rem', color: '#0f172a', marginBottom: '0.5rem' }}>
                 Explore the {activeRoleTab.replace('_', ' ').toUpperCase()} Workflow
               </h4>
-              <p style={{ fontSize: '0.825rem', color: '#94a3b8', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+              <p style={{ fontSize: '0.825rem', color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.5' }}>
                 Experience role-tailored dashboards, real-time validations, and enterprise data workflows.
               </p>
 
@@ -1053,13 +1044,13 @@ export function LandingPage() {
             <div className="report-preview-card">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                 <span className="badge badge-in-progress">SRS Report #1</span>
-                <BarChart3 size={18} color="#818cf8" />
+                <BarChart3 size={18} color="#4f46e5" />
               </div>
-              <h3 style={{ fontSize: '1.05rem', color: '#ffffff', marginBottom: '0.35rem' }}>Quarterly Sales Report</h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.45', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.05rem', color: '#0f172a', marginBottom: '0.35rem' }}>Quarterly Sales Report</h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.45', marginBottom: '1rem' }}>
                 Tracks commercial revenue in LKR alongside total cargo volume dispatched per quarter.
               </p>
-              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#475569', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
                 Dual-axis bar charts • AOV • Year/Quarter Filters
               </div>
             </div>
@@ -1067,13 +1058,13 @@ export function LandingPage() {
             <div className="report-preview-card">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                 <span className="badge badge-in-progress">SRS Report #2</span>
-                <Boxes size={18} color="#22c55e" />
+                <Boxes size={18} color="#16a34a" />
               </div>
-              <h3 style={{ fontSize: '1.05rem', color: '#ffffff', marginBottom: '0.35rem' }}>Most Ordered Items</h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.45', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.05rem', color: '#0f172a', marginBottom: '0.35rem' }}>Most Ordered Items</h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.45', marginBottom: '1rem' }}>
                 Quarterly demand ranking of top SKU velocity, total quantities ordered, and revenue contributions.
               </p>
-              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#475569', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
                 Rank Badges (Gold/Silver/Bronze) • Demand Share
               </div>
             </div>
@@ -1081,13 +1072,13 @@ export function LandingPage() {
             <div className="report-preview-card">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                 <span className="badge badge-in-progress">SRS Report #3</span>
-                <MapPin size={18} color="#38bdf8" />
+                <MapPin size={18} color="#0284c7" />
               </div>
-              <h3 style={{ fontSize: '1.05rem', color: '#ffffff', marginBottom: '0.35rem' }}>Geographic Sales Breakdown</h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.45', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.05rem', color: '#0f172a', marginBottom: '0.35rem' }}>Geographic Sales Breakdown</h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.45', marginBottom: '1rem' }}>
                 City-wise macro revenue distribution and route-wise micro delivery performance within each area.
               </p>
-              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#475569', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
                 Dual View Mode • Route Efficiency • Date Filters
               </div>
             </div>
@@ -1095,13 +1086,13 @@ export function LandingPage() {
             <div className="report-preview-card">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                 <span className="badge badge-in-progress">SRS Report #4</span>
-                <Clock size={18} color="#f59e0b" />
+                <Clock size={18} color="#d97706" />
               </div>
-              <h3 style={{ fontSize: '1.05rem', color: '#ffffff', marginBottom: '0.35rem' }}>Worker Working Hours</h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.45', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.05rem', color: '#0f172a', marginBottom: '0.35rem' }}>Worker Working Hours</h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.45', marginBottom: '1rem' }}>
                 Full compliance audit tracking Driver (40h) and Assistant (60h) working hours and payroll costs.
               </p>
-              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#475569', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
                 Legal Limit Progress Bars • Overtime Alert Badges
               </div>
             </div>
@@ -1109,13 +1100,13 @@ export function LandingPage() {
             <div className="report-preview-card">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                 <span className="badge badge-in-progress">SRS Report #5</span>
-                <Truck size={18} color="#a855f7" />
+                <Truck size={18} color="#9333ea" />
               </div>
-              <h3 style={{ fontSize: '1.05rem', color: '#ffffff', marginBottom: '0.35rem' }}>Truck Usage Analysis</h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.45', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.05rem', color: '#0f172a', marginBottom: '0.35rem' }}>Truck Usage Analysis</h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.45', marginBottom: '1rem' }}>
                 Monthly operational review of vehicle active hours, trips completed, and fleet capacity usage.
               </p>
-              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#475569', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
                 Vehicle License Utilization • Duty Cycle Metrics
               </div>
             </div>
@@ -1123,13 +1114,13 @@ export function LandingPage() {
             <div className="report-preview-card">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                 <span className="badge badge-in-progress">SRS Report #6</span>
-                <PackageCheck size={18} color="#10b981" />
+                <PackageCheck size={18} color="#16a34a" />
               </div>
-              <h3 style={{ fontSize: '1.05rem', color: '#ffffff', marginBottom: '0.35rem' }}>Customer Order History</h3>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: '1.45', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.05rem', color: '#0f172a', marginBottom: '0.35rem' }}>Customer Order History</h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', lineHeight: '1.45', marginBottom: '1rem' }}>
                 Granular ledger linking customer orders to nested product manifests and last-mile dispatch trucks.
               </p>
-              <div style={{ fontSize: '0.75rem', color: '#cbd5e1', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '0.75rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#475569', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
                 Search & Filter • Truck Plate Details • Delivery Proof
               </div>
             </div>
@@ -1152,33 +1143,33 @@ export function LandingPage() {
 
           <div className="arch-grid">
             <div className="arch-card">
-              <Database size={24} color="#818cf8" style={{ marginBottom: '0.75rem' }} />
-              <h4 style={{ fontSize: '1rem', color: '#ffffff', marginBottom: '0.35rem' }}>PostgreSQL 17 Engine</h4>
-              <p style={{ fontSize: '0.78rem', color: '#94a3b8', lineHeight: '1.45' }}>
+              <Database size={24} color="#4f46e5" style={{ marginBottom: '0.75rem' }} />
+              <h4 style={{ fontSize: '1rem', color: '#0f172a', marginBottom: '0.35rem' }}>PostgreSQL 17 Engine</h4>
+              <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: '1.45' }}>
                 ACID transactions, stored procedures, and triggers ensuring zero double-booking and mandatory rest rules.
               </p>
             </div>
 
             <div className="arch-card">
-              <Cpu size={24} color="#38bdf8" style={{ marginBottom: '0.75rem' }} />
-              <h4 style={{ fontSize: '1rem', color: '#ffffff', marginBottom: '0.35rem' }}>Express.js REST API</h4>
-              <p style={{ fontSize: '0.78rem', color: '#94a3b8', lineHeight: '1.45' }}>
+              <Cpu size={24} color="#0284c7" style={{ marginBottom: '0.75rem' }} />
+              <h4 style={{ fontSize: '1rem', color: '#0f172a', marginBottom: '0.35rem' }}>Express.js REST API</h4>
+              <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: '1.45' }}>
                 Typed TypeScript API with JWT HttpOnly security, schema validation, and structured error handling.
               </p>
             </div>
 
             <div className="arch-card">
-              <Layers size={24} color="#22c55e" style={{ marginBottom: '0.75rem' }} />
-              <h4 style={{ fontSize: '1rem', color: '#ffffff', marginBottom: '0.35rem' }}>React 19 & Vite</h4>
-              <p style={{ fontSize: '0.78rem', color: '#94a3b8', lineHeight: '1.45' }}>
-                Ultra-fast HMR client with modern dark aesthetics, responsive layout systems, and Recharts telemetry.
+              <Layers size={24} color="#16a34a" style={{ marginBottom: '0.75rem' }} />
+              <h4 style={{ fontSize: '1rem', color: '#0f172a', marginBottom: '0.35rem' }}>React 19 & Vite</h4>
+              <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: '1.45' }}>
+                Ultra-fast HMR client with modern light aesthetics, responsive layout systems, and Recharts telemetry.
               </p>
             </div>
 
             <div className="arch-card">
-              <ShieldCheck size={24} color="#f59e0b" style={{ marginBottom: '0.75rem' }} />
-              <h4 style={{ fontSize: '1rem', color: '#ffffff', marginBottom: '0.35rem' }}>Docker Orchestration</h4>
-              <p style={{ fontSize: '0.78rem', color: '#94a3b8', lineHeight: '1.45' }}>
+              <ShieldCheck size={24} color="#d97706" style={{ marginBottom: '0.75rem' }} />
+              <h4 style={{ fontSize: '1rem', color: '#0f172a', marginBottom: '0.35rem' }}>Docker Orchestration</h4>
+              <p style={{ fontSize: '0.78rem', color: '#64748b', lineHeight: '1.45' }}>
                 Isolated development and production container bridge networks with persistent volume lifecycle management.
               </p>
             </div>
@@ -1189,13 +1180,13 @@ export function LandingPage() {
             Call to Action Banner
         ------------------------------------------------------------ */}
         <section className="landing-cta">
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#a5b4fc', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.75rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#4338ca', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.75rem' }}>
             <Sparkles size={16} /> Ready to Orchestrate Multimodal Logistics?
           </div>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#ffffff', marginBottom: '1rem', letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', marginBottom: '1rem', letterSpacing: '-0.02em' }}>
             Streamline Rail & Road Distribution Across Sri Lanka
           </h2>
-          <p style={{ color: '#94a3b8', fontSize: '1rem', maxWidth: '650px', margin: '0 auto 2rem', lineHeight: '1.6' }}>
+          <p style={{ color: '#475569', fontSize: '1rem', maxWidth: '650px', margin: '0 auto 2rem', lineHeight: '1.6' }}>
             Log in to the console to manage train freight allocations, configure regional truck delivery schedules, 
             or generate comprehensive executive reports.
           </p>
@@ -1230,25 +1221,25 @@ export function LandingPage() {
                 <div className="brand-icon-box" style={{ width: '2rem', height: '2rem' }}>
                   <Train size={16} />
                 </div>
-                <strong style={{ fontSize: '1.1rem', color: '#ffffff' }}>Kandypack SCDS</strong>
+                <strong style={{ fontSize: '1.1rem', color: '#0f172a' }}>Kandypack SCDS</strong>
               </div>
-              <p style={{ fontSize: '0.8125rem', color: '#94a3b8', lineHeight: '1.5', maxWidth: '340px' }}>
+              <p style={{ fontSize: '0.8125rem', color: '#64748b', lineHeight: '1.5', maxWidth: '340px' }}>
                 Rail and Road-based Supply Chain Distribution System. Designed for high-volume multimodal 
                 logistics across Sri Lanka Railways and regional truck fleets.
               </p>
               <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span className="user-status-dot" />
-                <span style={{ fontSize: '0.75rem', color: '#22c55e', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>
                   All Systems Operational • PostgreSQL 17 • Express • React 19
                 </span>
               </div>
             </div>
 
             <div>
-              <h5 style={{ fontSize: '0.8125rem', color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>
+              <h5 style={{ fontSize: '0.8125rem', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>
                 Corridor Hubs
               </h5>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#94a3b8' }}>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem', color: '#64748b' }}>
                 <li>Colombo Fort Terminal</li>
                 <li>Negombo Coastal Hub</li>
                 <li>Galle Maritime Yard</li>
@@ -1259,26 +1250,26 @@ export function LandingPage() {
             </div>
 
             <div>
-              <h5 style={{ fontSize: '0.8125rem', color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>
+              <h5 style={{ fontSize: '0.8125rem', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>
                 Enterprise Portals
               </h5>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem' }}>
-                <li><Link to="/login" style={{ color: '#94a3b8' }}>Dispatcher Console</Link></li>
-                <li><Link to="/login" style={{ color: '#94a3b8' }}>Store Manager Portal</Link></li>
-                <li><Link to="/login" style={{ color: '#94a3b8' }}>Admin Oversight</Link></li>
-                <li><Link to="/orders/new" style={{ color: '#94a3b8' }}>Customer Ordering</Link></li>
-                <li><Link to="/reports" style={{ color: '#94a3b8' }}>Executive Reports</Link></li>
+                <li><Link to="/login" style={{ color: '#64748b' }}>Dispatcher Console</Link></li>
+                <li><Link to="/login" style={{ color: '#64748b' }}>Store Manager Portal</Link></li>
+                <li><Link to="/login" style={{ color: '#64748b' }}>Admin Oversight</Link></li>
+                <li><Link to="/orders/new" style={{ color: '#64748b' }}>Customer Ordering</Link></li>
+                <li><Link to="/reports" style={{ color: '#64748b' }}>Executive Reports</Link></li>
               </ul>
             </div>
 
             <div>
-              <h5 style={{ fontSize: '0.8125rem', color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>
+              <h5 style={{ fontSize: '0.8125rem', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>
                 Project Specification
               </h5>
-              <p style={{ fontSize: '0.8125rem', color: '#94a3b8', lineHeight: '1.5' }}>
+              <p style={{ fontSize: '0.8125rem', color: '#64748b', lineHeight: '1.5' }}>
                 Built in accordance with the Rail & Road-based Supply Chain Distribution System requirements.
               </p>
-              <div style={{ marginTop: '0.75rem', padding: '0.6rem 0.8rem', background: 'rgba(255, 255, 255, 0.04)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '0.75rem', color: '#cbd5e1' }}>
+              <div style={{ marginTop: '0.75rem', padding: '0.6rem 0.8rem', background: '#f8fafc', borderRadius: 'var(--radius-sm)', border: '1px solid #e2e8f0', fontSize: '0.75rem', color: '#334155' }}>
                 <strong>Group 19</strong> • Academic & Enterprise Demonstration
               </div>
             </div>

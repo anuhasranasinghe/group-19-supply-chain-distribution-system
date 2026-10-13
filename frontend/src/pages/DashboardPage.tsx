@@ -6,12 +6,29 @@
 // to their responsibilities.
 // ============================================================
 
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ROLE_LABELS } from '../types';
+import type { Order } from '../types';
+import { reportApi, orderApi, userApi, truckTripApi } from '../api/client';
+import { formatCurrency, formatDate, getStatusBadgeClass } from '../lib/utils';
+import { chartTooltipStyle } from './admin/reports/reportUtils';
 import {
   ShoppingCart, Package, Truck, Train, Users, MapPin,
-  BarChart3, Clock, TrendingUp, AlertTriangle, CheckCircle2, PackageCheck
+  BarChart3, Clock, TrendingUp, AlertTriangle, CheckCircle2, PackageCheck,
+  ArrowRight
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from 'recharts';
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -43,34 +60,215 @@ export function DashboardPage() {
 // Admin Dashboard
 // ============================================================
 function AdminDashboard() {
+  const [salesData, setSalesData] = useState<any[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [stats, setStats] = useState({
+    totalOrders: '—',
+    revenue: '—',
+    activeDeliveries: '—',
+    totalUsers: '—',
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchDashboardData() {
+      setIsLoading(true);
+      try {
+        const [salesRes, ordersRes, usersRes, tripsRes] = await Promise.allSettled([
+          reportApi.quarterlySales(),
+          orderApi.getAll(1, 5),
+          userApi.getAll(1, 1),
+          truckTripApi.getAll(1, 1),
+        ]);
+
+        if (!isMounted) return;
+
+        let totalRev = 0;
+        let deliveredOrders = 0;
+
+        if (salesRes.status === 'fulfilled') {
+          const rawSales = salesRes.value.data?.data || [];
+          totalRev = rawSales.reduce((acc: number, row: any) => acc + Number(row.total_revenue || 0), 0);
+          deliveredOrders = rawSales.reduce((acc: number, row: any) => acc + Number(row.order_count || 0), 0);
+
+          // Reverse for chronological timeline display
+          const formatted = [...rawSales]
+            .reverse()
+            .map((row: any) => ({
+              period: `Q${row.quarter} ${row.year}`,
+              revenue: Number(row.total_revenue || 0),
+              volume: Number(row.total_volume || 0),
+              orders: Number(row.order_count || 0),
+            }));
+          setSalesData(formatted);
+        }
+
+        let totalOrdersCount = deliveredOrders;
+        if (ordersRes.status === 'fulfilled') {
+          const orderData = ordersRes.value.data?.data;
+          setRecentOrders(orderData?.orders || []);
+          if (orderData?.total !== undefined) {
+            totalOrdersCount = orderData.total;
+          }
+        }
+
+        let userCount = '—';
+        if (usersRes.status === 'fulfilled') {
+          userCount = String(usersRes.value.data?.data?.total ?? '—');
+        }
+
+        let tripsCount = '—';
+        if (tripsRes.status === 'fulfilled') {
+          tripsCount = String(tripsRes.value.data?.data?.total ?? '—');
+        }
+
+        setStats({
+          totalOrders: totalOrdersCount ? String(totalOrdersCount) : '0',
+          revenue: formatCurrency(totalRev),
+          activeDeliveries: tripsCount,
+          totalUsers: userCount,
+        });
+      } catch (err: any) {
+        console.error('Error fetching admin dashboard data:', err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    fetchDashboardData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <>
       <div className="stats-grid">
-        <StatCard icon={<ShoppingCart />} value="—" label="Total Orders" color="var(--color-brand)" />
-        <StatCard icon={<TrendingUp />} value="—" label="Revenue (LKR)" color="var(--color-success)" />
-        <StatCard icon={<Truck />} value="—" label="Active Deliveries" color="var(--color-warning)" />
-        <StatCard icon={<Users />} value="—" label="Total Users" color="var(--color-info)" />
+        <StatCard icon={<ShoppingCart />} value={stats.totalOrders} label="Total Orders" color="var(--color-brand)" />
+        <StatCard icon={<TrendingUp />} value={stats.revenue} label="Revenue (Delivered)" color="var(--color-success)" />
+        <StatCard icon={<Truck />} value={stats.activeDeliveries} label="Total Truck Trips" color="var(--color-warning)" />
+        <StatCard icon={<Users />} value={stats.totalUsers} label="Total Users" color="var(--color-info)" />
       </div>
-      <div className="content-grid">
+      <div className="content-grid" style={{ gridTemplateColumns: '1.4fr 1fr' }}>
         <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">📊 Quarterly Sales Overview</h3>
+          <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <BarChart3 size={18} style={{ color: 'var(--color-brand)' }} />
+              Quarterly Sales Overview
+            </h3>
+            <Link
+              to="/admin/reports/quarterly-sales"
+              className="btn btn-ghost btn-sm"
+              style={{ fontSize: '0.8125rem', gap: '0.25rem' }}
+            >
+              Full Report <ArrowRight size={14} />
+            </Link>
           </div>
-          <div className="empty-state">
-            <BarChart3 className="empty-state-icon" />
-            <p className="empty-state-title">Sales chart will appear here</p>
-            <p>Implement the quarterly sales SQL query to populate this chart</p>
-          </div>
+
+          {isLoading ? (
+            <div className="loading-container" style={{ minHeight: '260px' }}>
+              <div className="spinner" />
+            </div>
+          ) : salesData.length === 0 ? (
+            <div className="empty-state" style={{ padding: '2.5rem 1rem' }}>
+              <BarChart3 className="empty-state-icon" />
+              <p className="empty-state-title">No Sales Data Available</p>
+              <p>Delivered orders will appear here once recorded.</p>
+            </div>
+          ) : (
+            <div style={{ width: '100%', height: 280, marginTop: '0.5rem' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={salesData} margin={{ top: 10, right: 15, left: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+                  <XAxis dataKey="period" stroke="#94a3b8" fontSize={12} />
+                  <YAxis
+                    yAxisId="left"
+                    stroke="#6366f1"
+                    fontSize={12}
+                    tickFormatter={(val) => `LKR ${(val / 1000).toFixed(0)}k`}
+                  />
+                  <YAxis yAxisId="right" orientation="right" stroke="#22c55e" fontSize={12} />
+                  <Tooltip
+                    contentStyle={chartTooltipStyle}
+                    formatter={(value: any, name: any) => {
+                      if (name === 'Revenue (LKR)') return [formatCurrency(Number(value)), name];
+                      return [Number(value).toLocaleString() + ' units', name];
+                    }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '0.8125rem', paddingTop: '6px' }} />
+                  <Bar yAxisId="left" dataKey="revenue" name="Revenue (LKR)" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                  <Bar yAxisId="right" dataKey="volume" name="Cargo Volume (units)" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
+
         <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">📦 Recent Orders</h3>
+          <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <ShoppingCart size={18} style={{ color: 'var(--color-brand)' }} />
+              Recent Orders
+            </h3>
+            <Link
+              to="/orders"
+              className="btn btn-ghost btn-sm"
+              style={{ fontSize: '0.8125rem', gap: '0.25rem' }}
+            >
+              View All <ArrowRight size={14} />
+            </Link>
           </div>
-          <div className="empty-state">
-            <ShoppingCart className="empty-state-icon" />
-            <p className="empty-state-title">No orders yet</p>
-            <p>Orders will appear here once the database queries are implemented</p>
-          </div>
+
+          {isLoading ? (
+            <div className="loading-container" style={{ minHeight: '260px' }}>
+              <div className="spinner" />
+            </div>
+          ) : recentOrders.length === 0 ? (
+            <div className="empty-state" style={{ padding: '2.5rem 1rem' }}>
+              <ShoppingCart className="empty-state-icon" />
+              <p className="empty-state-title">No orders yet</p>
+              <p>Customer orders will appear here once placed.</p>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table className="data-table" style={{ fontSize: '0.85rem' }}>
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentOrders.map((order) => (
+                    <tr key={order.id}>
+                      <td>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                          #{order.id.slice(0, 8)}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                          {formatDate(order.order_date)}
+                        </div>
+                      </td>
+                      <td>
+                        <div>{order.customer_name || 'Customer'}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                          {order.route_area || 'Route'}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={getStatusBadgeClass(order.status)}>
+                          {order.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </>
