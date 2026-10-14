@@ -337,6 +337,8 @@ export function OrdersPage() {
                       selectedOrder.items?.reduce((acc, it) => acc + Number(it.line_total || it.quantity * it.unit_price), 0) || 0
                     )}
                   </div>
+                </div>
+
                 {/* Staff Order Status Controls */}
                 {canManageStatus && (
                   <div

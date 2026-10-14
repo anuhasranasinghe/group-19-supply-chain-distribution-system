@@ -87,6 +87,7 @@ export interface TrainTrip {
   from_city: string;
   to_city: string;
   destination_store_id: string | null;
+  destination_store_name?: string;
   trip_date: string;
   departure_time: string;
   arrival_time: string;
